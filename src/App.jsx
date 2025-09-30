@@ -404,8 +404,8 @@ const CanvassingApp = () => {
       return (
         <div className="space-y-4">
           {searchTerm && (
-            <div className="bg-orange-100 border-l-4 border-zohran-orange p-4 rounded mb-4">
-              <p className="text-gray-900">Showing results for "{searchTerm}"</p>
+            <div className="bg-white border-l-4 border-zohran-orange p-4 rounded mb-4">
+              <p className="text-black">Showing results for "{searchTerm}"</p>
             </div>
           )}
           <h2 className="text-2xl sm:text-3xl font-bold text-zohran-blue mb-4">Persuasion Questions</h2>
@@ -445,8 +445,8 @@ const CanvassingApp = () => {
       return (
         <div className="space-y-4 sm:space-y-6">
           {searchTerm && (
-            <div className="bg-orange-100 border-l-4 border-zohran-orange p-4 rounded mb-4">
-              <p className="text-gray-900">Showing results for "{searchTerm}"</p>
+            <div className="bg-white border-l-4 border-zohran-orange p-4 rounded mb-4">
+              <p className="text-black">Showing results for "{searchTerm}"</p>
             </div>
           )}
           <h2 className="text-2xl sm:text-3xl font-bold text-zohran-blue mb-4">Identity-Based Persuasion</h2>
@@ -479,8 +479,8 @@ const CanvassingApp = () => {
       return (
         <div className="space-y-4">
           {searchTerm && (
-            <div className="bg-orange-100 border-l-4 border-zohran-orange p-4 rounded mb-4">
-              <p className="text-gray-900">Showing results for "{searchTerm}"</p>
+            <div className="bg-white border-l-4 border-zohran-orange p-4 rounded mb-4">
+              <p className="text-black">Showing results for "{searchTerm}"</p>
             </div>
           )}
           <h2 className="text-2xl sm:text-3xl font-bold text-zohran-blue mb-4">Zohran's Platform</h2>
@@ -502,8 +502,8 @@ const CanvassingApp = () => {
       return (
         <div className="space-y-4">
           {searchTerm && (
-            <div className="bg-orange-100 border-l-4 border-zohran-orange p-4 rounded mb-4">
-              <p className="text-gray-900">Showing results for "{searchTerm}"</p>
+            <div className="bg-white border-l-4 border-zohran-orange p-4 rounded mb-4">
+              <p className="text-black">Showing results for "{searchTerm}"</p>
             </div>
           )}
           <h2 className="text-2xl sm:text-3xl font-bold text-zohran-blue mb-4">Addressing Concerns</h2>
@@ -526,8 +526,8 @@ const CanvassingApp = () => {
       return (
         <div className="space-y-4">
           {searchTerm && (
-            <div className="bg-orange-100 border-l-4 border-zohran-orange p-4 rounded mb-4">
-              <p className="text-gray-900">Showing results for "{searchTerm}"</p>
+            <div className="bg-white border-l-4 border-zohran-orange p-4 rounded mb-4">
+              <p className="text-black">Showing results for "{searchTerm}"</p>
             </div>
           )}
           <h2 className="text-2xl sm:text-3xl font-bold text-zohran-blue mb-4">About Cuomo</h2>
@@ -552,8 +552,8 @@ const CanvassingApp = () => {
       return (
         <div className="space-y-4">
           {searchTerm && (
-            <div className="bg-orange-100 border-l-4 border-zohran-orange p-4 rounded mb-4">
-              <p className="text-gray-900">Showing results for "{searchTerm}"</p>
+            <div className="bg-white border-l-4 border-zohran-orange p-4 rounded mb-4">
+              <p className="text-black">Showing results for "{searchTerm}"</p>
             </div>
           )}
           <h2 className="text-2xl sm:text-3xl font-bold text-zohran-blue mb-4">Brighton Beach Area Report</h2>
@@ -716,7 +716,7 @@ const CanvassingApp = () => {
             </div>
           </div>
 
-          <div className="bg-blue-50 p-5 sm:p-6 rounded-lg shadow-md border-l-4 border-zohran-blue">
+          <div className="bg-white p-5 sm:p-6 rounded-lg shadow-md border-l-4 border-zohran-blue">
             <h3 className="font-bold text-lg sm:text-xl text-zohran-blue mb-3">🗳️ Actual Voting Results</h3>
             
             <div className="space-y-3 text-sm sm:text-base">
@@ -840,7 +840,7 @@ const CanvassingApp = () => {
             <h3 className="font-bold text-lg sm:text-xl text-zohran-blue mb-4">📚 Sources & Further Reading</h3>
             <div className="space-y-4 text-sm sm:text-base">
               <div>
-                <p className="font-semibold text-gray-800 mb-2">Campaign & Results:</p>
+                <p className="font-semibold text-black mb-2">Campaign & Results:</p>
                 <ul className="space-y-1 text-zohran-blue">
                   <li>• <a href="https://www.zohranfornyc.com/" target="_blank" rel="noopener noreferrer" className="hover:underline">Zohran for NYC - Official Campaign</a></li>
                   <li>• <a href="https://en.wikipedia.org/wiki/2025_New_York_City_Democratic_mayoral_primary" target="_blank" rel="noopener noreferrer" className="hover:underline">2025 NYC Democratic Primary</a></li>
@@ -849,7 +849,7 @@ const CanvassingApp = () => {
               </div>
 
               <div>
-                <p className="font-semibold text-gray-800 mb-2">Community Analysis:</p>
+                <p className="font-semibold text-black mb-2">Community Analysis:</p>
                 <ul className="space-y-1 text-zohran-blue">
                   <li>• <a href="https://forward.com/" target="_blank" rel="noopener noreferrer" className="hover:underline">The Forward - Jewish Community</a></li>
                   <li>• <a href="https://www.tabletmag.com/" target="_blank" rel="noopener noreferrer" className="hover:underline">Tablet Magazine</a></li>
@@ -858,7 +858,7 @@ const CanvassingApp = () => {
               </div>
 
               <div>
-                <p className="font-semibold text-gray-800 mb-2">Russian-Language Media:</p>
+                <p className="font-semibold text-black mb-2">Russian-Language Media:</p>
                 <ul className="space-y-1 text-zohran-blue">
                   <li>• <a href="https://www.brightonbeachnews.com/" target="_blank" rel="noopener noreferrer" className="hover:underline">Brighton Beach News</a></li>
                   <li>• <a href="https://novayagazeta.eu/" target="_blank" rel="noopener noreferrer" className="hover:underline">Novaya Gazeta</a></li>
@@ -867,7 +867,7 @@ const CanvassingApp = () => {
               </div>
 
               <div>
-                <p className="font-semibold text-gray-800 mb-2">Opposition Voices:</p>
+                <p className="font-semibold text-black mb-2">Opposition Voices:</p>
                 <ul className="space-y-1 text-zohran-blue">
                   <li>• <a href="https://www.thegatewaypundit.com/2025/07/my-parents-stood-breadlines-mamdani-wants-bring-nyc/" target="_blank" rel="noopener noreferrer" className="hover:underline">Gateway Pundit: Lyakhov on Breadlines</a></li>
                   <li>• <a href="https://townhall.com/columnists/gregory-lyakhov/2025/07/22/zohran-mamdanis-agenda-hurts-nycs-kids-n2660726" target="_blank" rel="noopener noreferrer" className="hover:underline">Townhall: Mamdani's Agenda</a></li>
