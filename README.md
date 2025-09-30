@@ -5,4 +5,4 @@ A mobile-friendly web app for volunteers canvassing Russian-speaking Brooklyn vo
 ## Quick Start
 ```bash
 npm install
-npm run dev
+npm run devv
