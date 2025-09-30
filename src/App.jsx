@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Search, Home, Users, DollarSign, Shield, AlertCircle, BookOpen, ChevronRight, Menu, X } from 'lucide-react';
 
 const CanvassingApp = () => {
@@ -183,13 +183,104 @@ const CanvassingApp = () => {
     }
   ];
 
-  const filteredSections = Object.entries(sections).filter(([key]) => {
-    if (!searchTerm) return true;
-    return sections[key].title.toLowerCase().includes(searchTerm.toLowerCase());
-  });
+  // Build searchable content
+  const allContent = useMemo(() => {
+    const content = [];
+    
+    // Add priorities
+    priorities.forEach(item => {
+      content.push({
+        section: 'priorities',
+        text: `${item.title} ${item.russian} ${item.english} ${item.pronunciation || ''}`
+      });
+    });
+
+    // Add persuasion questions
+    persuasionQuestions.forEach(item => {
+      content.push({
+        section: 'questions',
+        text: `${item.category} ${item.russian} ${item.english} ${item.pronunciation || ''} ${item.followup || ''}`
+      });
+    });
+
+    // Add affinity groups
+    affinityGroups.forEach(group => {
+      group.points.forEach(point => {
+        content.push({
+          section: 'affinity',
+          text: `${group.group} ${point.russian} ${point.english} ${point.pronunciation || ''}`
+        });
+      });
+    });
+
+    // Add platform
+    platform.forEach(item => {
+      content.push({
+        section: 'platform',
+        text: `${item.title} ${item.russian} ${item.english}`
+      });
+    });
+
+    // Add concerns
+    concerns.forEach(item => {
+      content.push({
+        section: 'concerns',
+        text: `${item.title} ${item.russian} ${item.english}`
+      });
+    });
+
+    // Add Cuomo points
+    cuomoPoints.forEach(item => {
+      content.push({
+        section: 'cuomo',
+        text: `${item.russian} ${item.english}`
+      });
+    });
+
+    // Add additional content keywords
+    content.push({
+      section: 'additional',
+      text: 'Brighton Beach Brooklyn Russian speakers voting Republican demographics Uzbek Tajik Pakistani Muslim voters primary results crime statistics murders shootings safety Inna Vernikov Gregory Lyakhov Soviet trauma communism socialism bread lines antisemite Palestine Israel Mikhail Novakhov Central Asian Nowruz Odessa Georgia Armenian Ukrainian Putin Trump Cuomo funding referendum recall'
+    });
+
+    return content;
+  }, []);
+
+  // Search logic
+  const searchResults = useMemo(() => {
+    if (!searchTerm.trim()) {
+      return { matchingSections: new Set(Object.keys(sections)), hasResults: true };
+    }
+
+    const query = searchTerm.toLowerCase();
+    const matchingSections = new Set();
+
+    allContent.forEach(item => {
+      if (item.text.toLowerCase().includes(query)) {
+        matchingSections.add(item.section);
+      }
+    });
+
+    // Also check section titles
+    Object.entries(sections).forEach(([key, section]) => {
+      if (section.title.toLowerCase().includes(query)) {
+        matchingSections.add(key);
+      }
+    });
+
+    return { 
+      matchingSections, 
+      hasResults: matchingSections.size > 0 
+    };
+  }, [searchTerm, allContent]);
 
   const NavButton = ({ sectionKey, section }) => {
     const Icon = section.icon;
+    const isVisible = searchResults.matchingSections.has(sectionKey);
+    const hasMatch = searchTerm && isVisible;
+    
+    if (searchTerm && !isVisible) return null;
+    
     return (
       <button
         onClick={() => {
@@ -200,22 +291,52 @@ const CanvassingApp = () => {
         className={`w-full flex items-center gap-3 px-4 py-4 rounded-lg transition-all touch-manipulation ${
           activeSection === sectionKey
             ? 'bg-purple-600 text-white shadow-md'
+            : hasMatch
+            ? 'bg-yellow-100 text-gray-700 hover:bg-yellow-200 border-2 border-yellow-400'
             : 'bg-white text-gray-700 hover:bg-gray-50 active:bg-gray-100'
         }`}
       >
         <Icon size={22} className="flex-shrink-0" />
         <span className="font-medium text-left">{section.title}</span>
-        <ChevronRight size={18} className="ml-auto flex-shrink-0" />
+        {hasMatch && (
+          <span className="ml-auto bg-yellow-400 text-yellow-900 text-xs px-2 py-1 rounded-full">
+            Match
+          </span>
+        )}
+        {!hasMatch && <ChevronRight size={18} className="ml-auto flex-shrink-0" />}
       </button>
     );
   };
 
   const renderContent = () => {
+    // Show no results message if searching and nothing found
+    if (searchTerm && !searchResults.hasResults) {
+      return (
+        <div className="bg-white p-8 rounded-lg shadow-md text-center">
+          <p className="text-gray-600 text-lg mb-2">No results found for "{searchTerm}"</p>
+          <button
+            onClick={() => setSearchTerm('')}
+            className="text-purple-600 hover:text-purple-700 font-medium"
+          >
+            Clear search
+          </button>
+        </div>
+      );
+    }
+
     if (activeSection === 'home') {
       return (
         <div className="space-y-4 sm:space-y-6">
+          {searchTerm && (
+            <div className="bg-yellow-100 border-l-4 border-yellow-400 p-4 rounded">
+              <p className="text-yellow-900">
+                Found matches in {searchResults.matchingSections.size} sections for "{searchTerm}"
+              </p>
+            </div>
+          )}
+          
           <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-5 sm:p-6 rounded-xl shadow-lg">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-3">Russian-language Volunteer Canvassing Guide</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-3">Volunteer Canvassing Guide</h2>
             <p className="text-purple-100 leading-relaxed text-base sm:text-lg">
               Russian-speaking Brooklyn voters for Zohran Mamdani's campaign
             </p>
@@ -255,6 +376,11 @@ const CanvassingApp = () => {
     if (activeSection === 'priorities') {
       return (
         <div className="space-y-4">
+          {searchTerm && (
+            <div className="bg-yellow-100 border-l-4 border-yellow-400 p-4 rounded mb-4">
+              <p className="text-yellow-900">Showing results for "{searchTerm}"</p>
+            </div>
+          )}
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4">Key Priorities</h2>
           {priorities.map((item, idx) => (
             <div key={idx} className="bg-white p-5 sm:p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
@@ -277,6 +403,11 @@ const CanvassingApp = () => {
     if (activeSection === 'questions') {
       return (
         <div className="space-y-4">
+          {searchTerm && (
+            <div className="bg-yellow-100 border-l-4 border-yellow-400 p-4 rounded mb-4">
+              <p className="text-yellow-900">Showing results for "{searchTerm}"</p>
+            </div>
+          )}
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4">Persuasion Questions</h2>
           <div className="bg-gradient-to-r from-green-50 to-green-100 p-5 sm:p-6 rounded-lg shadow-md border-l-4 border-green-500 mb-6">
             <p className="text-green-700 text-sm sm:text-base">
@@ -313,6 +444,11 @@ const CanvassingApp = () => {
     if (activeSection === 'affinity') {
       return (
         <div className="space-y-4 sm:space-y-6">
+          {searchTerm && (
+            <div className="bg-yellow-100 border-l-4 border-yellow-400 p-4 rounded mb-4">
+              <p className="text-yellow-900">Showing results for "{searchTerm}"</p>
+            </div>
+          )}
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4">Identity-Based Persuasion</h2>
           <p className="text-gray-700 bg-purple-50 p-4 sm:p-5 rounded-lg border-l-4 border-purple-500 text-base sm:text-lg">
             Tailored talking points for specific community groups in Brighton Beach
@@ -342,6 +478,11 @@ const CanvassingApp = () => {
     if (activeSection === 'platform') {
       return (
         <div className="space-y-4">
+          {searchTerm && (
+            <div className="bg-yellow-100 border-l-4 border-yellow-400 p-4 rounded mb-4">
+              <p className="text-yellow-900">Showing results for "{searchTerm}"</p>
+            </div>
+          )}
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4">Zohran's Platform</h2>
           <p className="text-gray-600 mb-4 text-base sm:text-lg">He will... / Он...</p>
           {platform.map((item, idx) => (
@@ -360,6 +501,11 @@ const CanvassingApp = () => {
     if (activeSection === 'concerns') {
       return (
         <div className="space-y-4">
+          {searchTerm && (
+            <div className="bg-yellow-100 border-l-4 border-yellow-400 p-4 rounded mb-4">
+              <p className="text-yellow-900">Showing results for "{searchTerm}"</p>
+            </div>
+          )}
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4">Addressing Concerns</h2>
           {concerns.map((item, idx) => (
             <div key={idx} className="bg-white p-5 sm:p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
@@ -379,6 +525,11 @@ const CanvassingApp = () => {
     if (activeSection === 'cuomo') {
       return (
         <div className="space-y-4">
+          {searchTerm && (
+            <div className="bg-yellow-100 border-l-4 border-yellow-400 p-4 rounded mb-4">
+              <p className="text-yellow-900">Showing results for "{searchTerm}"</p>
+            </div>
+          )}
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4">About Cuomo</h2>
           <div className="bg-red-50 border-l-4 border-red-500 p-4 sm:p-5 rounded mb-4">
             <p className="text-red-900 font-medium text-base sm:text-lg">
@@ -400,6 +551,11 @@ const CanvassingApp = () => {
     if (activeSection === 'additional') {
       return (
         <div className="space-y-4">
+          {searchTerm && (
+            <div className="bg-yellow-100 border-l-4 border-yellow-400 p-4 rounded mb-4">
+              <p className="text-yellow-900">Showing results for "{searchTerm}"</p>
+            </div>
+          )}
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4">Brighton Beach Area Report</h2>
           
           <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-5 sm:p-6 rounded-lg shadow-lg">
@@ -686,7 +842,7 @@ const CanvassingApp = () => {
               <div>
                 <p className="font-semibold text-gray-800 mb-2">Campaign & Results:</p>
                 <ul className="space-y-1 text-purple-600">
-                  <li>• <a href="https://www.zohranfornyc.com/" target="_blank" rel="noopener noreferrer" className="hover:underline">Zohran for Brighton Beach - Official Campaign</a></li>
+                  <li>• <a href="https://www.zohranfornyc.com/" target="_blank" rel="noopener noreferrer" className="hover:underline">Zohran for NYC - Official Campaign</a></li>
                   <li>• <a href="https://en.wikipedia.org/wiki/2025_New_York_City_Democratic_mayoral_primary" target="_blank" rel="noopener noreferrer" className="hover:underline">2025 NYC Democratic Primary</a></li>
                   <li>• <a href="https://www.bloomberg.com/graphics/2025-mamdani-nyc-voters/" target="_blank" rel="noopener noreferrer" className="hover:underline">Bloomberg: Who Voted for Mamdani?</a></li>
                 </ul>
@@ -755,7 +911,7 @@ const CanvassingApp = () => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-200" size={20} />
             <input
               type="text"
-              placeholder="Search sections..."
+              placeholder="Search all content..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 sm:py-2.5 rounded-lg bg-purple-700 text-white placeholder-purple-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm sm:text-base"
@@ -783,7 +939,7 @@ const CanvassingApp = () => {
             `}
           >
             <div className="space-y-2 lg:sticky lg:top-24">
-              {filteredSections.map(([key, section]) => (
+              {Object.entries(sections).map(([key, section]) => (
                 <NavButton key={key} sectionKey={key} section={section} />
               ))}
             </div>
