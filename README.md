@@ -6,3 +6,5 @@ A mobile-friendly web app for volunteers canvassing Russian-speaking Brooklyn vo
 ```bash
 npm install
 npm run dev
+
+d
