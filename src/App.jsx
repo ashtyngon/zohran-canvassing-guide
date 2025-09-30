@@ -1,13 +1,16 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Home, Users, DollarSign, Shield, AlertCircle, BookOpen, ChevronRight, Menu, X } from 'lucide-react';
+import { Search, Home, Users, DollarSign, Shield, AlertCircle, BookOpen, ChevronRight, Menu, X, MessageSquare, Globe, ExternalLink } from 'lucide-react';
 
 const CanvassingApp = () => {
   const [activeSection, setActiveSection] = useState('home');
   const [searchTerm, setSearchTerm] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scriptStep, setScriptStep] = useState('intro');
+  const [scriptLanguage, setScriptLanguage] = useState('both'); // 'ru', 'en', 'both'
 
   const sections = {
     home: { title: 'Home', icon: Home },
+    script: { title: 'Canvassing Script', icon: MessageSquare },
     priorities: { title: 'Key Priorities', icon: AlertCircle },
     questions: { title: 'Persuasion Questions', icon: Users },
     affinity: { title: 'Identity-Based Persuasion', icon: Users },
@@ -259,6 +262,12 @@ const CanvassingApp = () => {
       text: 'Brighton Beach Brooklyn Russian speakers voting Republican demographics Uzbek Tajik Pakistani Muslim voters primary results crime statistics murders shootings safety Inna Vernikov Gregory Lyakhov Soviet trauma communism socialism bread lines antisemite Palestine Israel Mikhail Novakhov Central Asian Nowruz Odessa Georgia Armenian Ukrainian Putin Trump Cuomo funding referendum recall'
     });
 
+    // Add script content
+    content.push({
+      section: 'script',
+      text: 'canvassing script decision tree door knocking voter outreach volunteer привет здравствуйте голосование выборы мэр волонтер кампания Зохран Мамдани ноября голосовать регистрация участок досрочно почта автобусы аренда детский сад'
+    });
+
     return content;
   }, []);
 
@@ -389,6 +398,277 @@ const CanvassingApp = () => {
       );
     }
 
+    if (activeSection === 'script') {
+      const scriptNodes = {
+        intro: {
+          ru: 'Здравствуйте! [ИМЯ]? Я [ВАШЕ ИМЯ], волонтёр кампании демократического кандидата в мэры — Зохрана Мамдани. 4 ноября выборы мэра.',
+          en: 'Hi! Is [VOTER NAME] available? I\'m [YOUR NAME], a volunteer for the Democratic candidate for mayor, Zohran Mamdani. The election is on November 4.',
+          next: 'offer',
+          buttonText: { ru: 'Дальше', en: 'Next' }
+        },
+        offer: {
+          ru: 'Бесплатные и быстрые автобусы; заморозка аренды для жильцов с регулируемой ставкой; доступный уход за детьми. Что важнее для вас лично?',
+          en: 'Free & fast buses; a rent freeze for rent-stabilized tenants; universal childcare. Which matters most to you?',
+          next: 'support',
+          buttonText: { ru: 'Дальше', en: 'Next' }
+        },
+        support: {
+          ru: 'Я поддерживаю Зохрана, потому что ___. А вы планируете голосовать за него?',
+          en: 'I\'m voting for Zohran because ___. Do you plan to vote for him?',
+          branches: [
+            { label: { ru: 'Да, твёрдо', en: 'Yes, definitely' }, next: 'yes' },
+            { label: { ru: 'Скорее да / Не уверен', en: 'Lean/Undecided' }, next: 'lean' },
+            { label: { ru: 'Против', en: 'Opposed' }, next: 'opposed' }
+          ]
+        },
+        yes: {
+          ru: 'Отлично! 4 ноября участки открыты с 6:00 до 21:00. Досрочное голосование — даты и часы смотрите на официальном сайте.',
+          en: 'Great! On Nov 4, polls are open 6AM–9PM. For early voting dates/hours, read from the official site.',
+          next: 'plan',
+          buttonText: { ru: 'К плану голосования', en: 'To voting plan' }
+        },
+        lean: {
+          ru: 'Понимаю. Что для вас самое важное от мэра? (Коротко свяжите ответ с пунктами программы.)',
+          en: 'I hear you. What matters most in a mayor? (Briefly tie back to policy.)',
+          next: 'plan',
+          buttonText: { ru: 'К плану голосования', en: 'To voting plan' }
+        },
+        opposed: {
+          ru: 'Спасибо, что сказали. Хорошего дня!',
+          en: 'Thanks for sharing — have a good day!',
+          next: 'wrap_opposed',
+          buttonText: { ru: 'Завершить', en: 'Finish' }
+        },
+        plan: {
+          ru: '• Вы зарегистрированы?\n• Знаете адрес вашего участка?\n• Будете голосовать в день выборов, досрочно или по почте?',
+          en: 'Registered? Poll site address? Election Day, early, or by mail?',
+          note: { 
+            ru: 'Подсказка: даты/адреса читать с официальных страниц',
+            en: 'Tip: Read dates/addresses from official pages'
+          },
+          next: 'ask',
+          buttonText: { ru: 'Дальше', en: 'Next' }
+        },
+        ask: {
+          ru: 'Хотите присоединиться к нашей волонтёрской команде? Мы сообщим о ближайших выходах в Южном Бруклине.',
+          en: 'Would you like to join our volunteer team? We\'ll update you on the next canvass in South Brooklyn.',
+          branches: [
+            { label: { ru: 'Оставить контакты', en: 'Leave contacts' }, next: 'details' },
+            { label: { ru: 'Пропустить', en: 'Skip' }, next: 'wrap' }
+          ]
+        },
+        details: {
+          ru: 'Добавьте номер телефона и email во вкладке Details в MiniVAN (с согласия).',
+          en: 'Add phone and email under Details in MiniVAN (with consent).',
+          next: 'wrap',
+          buttonText: { ru: 'Завершить', en: 'Finish' }
+        },
+        wrap: {
+          ru: 'Спасибо!',
+          en: 'Thanks!',
+          next: 'intro',
+          buttonText: { ru: 'Начать заново', en: 'Start over' }
+        },
+        wrap_opposed: {
+          ru: 'Спасибо за время!',
+          en: 'Thanks for your time!',
+          next: 'intro',
+          buttonText: { ru: 'Начать заново', en: 'Start over' }
+        }
+      };
+
+      const currentNode = scriptNodes[scriptStep];
+
+      return (
+        <div className="space-y-4">
+          {searchTerm && (
+            <div className="bg-white border-l-4 border-zohran-orange p-4 rounded mb-4">
+              <p className="text-black">Showing results for "{searchTerm}"</p>
+            </div>
+          )}
+          
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl sm:text-3xl font-bold text-zohran-blue">Canvassing Script</h2>
+            
+            {/* Language Toggle */}
+            <div className="flex gap-2 bg-white rounded-lg shadow p-1">
+              <button
+                onClick={() => setScriptLanguage('ru')}
+                className={`px-3 py-1.5 rounded transition-all text-sm font-medium ${
+                  scriptLanguage === 'ru' 
+                    ? 'bg-zohran-blue text-white' 
+                    : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                RU
+              </button>
+              <button
+                onClick={() => setScriptLanguage('en')}
+                className={`px-3 py-1.5 rounded transition-all text-sm font-medium ${
+                  scriptLanguage === 'en' 
+                    ? 'bg-zohran-blue text-white' 
+                    : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                EN
+              </button>
+              <button
+                onClick={() => setScriptLanguage('both')}
+                className={`px-3 py-1.5 rounded transition-all text-sm font-medium ${
+                  scriptLanguage === 'both' 
+                    ? 'bg-zohran-blue text-white' 
+                    : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                RU+EN
+              </button>
+            </div>
+          </div>
+
+          {/* Official Resources */}
+          <div className="bg-white p-4 sm:p-5 rounded-lg shadow-md border-l-4 border-zohran-orange">
+            <h3 className="font-bold text-base sm:text-lg mb-3 text-black">Official NYC Voting Resources</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <a
+                href="https://vote.nyc"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-1 px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded text-sm text-zohran-blue font-medium transition-colors"
+              >
+                vote.nyc
+                <ExternalLink size={14} />
+              </a>
+              <a
+                href="https://e-register.vote.nyc/registration"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-1 px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded text-sm text-zohran-blue font-medium transition-colors"
+              >
+                Register
+                <ExternalLink size={14} />
+              </a>
+              <a
+                href="https://requestballot.vote.nyc/absentee"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-1 px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded text-sm text-zohran-blue font-medium transition-colors"
+              >
+                Absentee
+                <ExternalLink size={14} />
+              </a>
+              <a
+                href="https://requestballot.vote.nyc/earlymail"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-1 px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded text-sm text-zohran-blue font-medium transition-colors"
+              >
+                Early Mail
+                <ExternalLink size={14} />
+              </a>
+            </div>
+          </div>
+
+          {/* Step Indicator */}
+          <div className="bg-white p-3 sm:p-4 rounded-lg shadow-md">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600">
+                Step: <span className="font-bold text-zohran-blue">{scriptStep.toUpperCase()}</span>
+              </span>
+              <button
+                onClick={() => setScriptStep('intro')}
+                className="text-sm text-zohran-orange hover:text-orange-700 font-medium"
+              >
+                Reset Script
+              </button>
+            </div>
+          </div>
+
+          {/* Main Script Content */}
+          <div className="bg-white p-5 sm:p-6 rounded-lg shadow-lg border-2 border-zohran-blue">
+            <div className="space-y-4">
+              {/* Russian Text */}
+              {(scriptLanguage === 'ru' || scriptLanguage === 'both') && (
+                <div className="bg-gray-50 p-4 sm:p-5 rounded-lg">
+                  <p className="text-black text-lg sm:text-xl leading-relaxed whitespace-pre-line">
+                    {currentNode.ru}
+                  </p>
+                  {currentNode.note?.ru && (
+                    <p className="text-gray-600 text-sm mt-3 italic">
+                      {currentNode.note.ru}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* English Text */}
+              {(scriptLanguage === 'en' || scriptLanguage === 'both') && (
+                <div className={`p-4 sm:p-5 rounded-lg ${scriptLanguage === 'both' ? 'bg-white border border-gray-300' : 'bg-gray-50'}`}>
+                  <p className={`text-black leading-relaxed whitespace-pre-line ${scriptLanguage === 'both' ? 'text-sm sm:text-base italic' : 'text-lg sm:text-xl'}`}>
+                    {currentNode.en}
+                  </p>
+                  {currentNode.note?.en && (
+                    <p className="text-gray-600 text-sm mt-3 italic">
+                      {currentNode.note.en}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* Navigation Buttons */}
+              <div className="pt-4">
+                {currentNode.branches ? (
+                  <div className="grid gap-3">
+                    {currentNode.branches.map((branch, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setScriptStep(branch.next)}
+                        className="w-full px-4 py-3 sm:py-4 bg-zohran-blue hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-base sm:text-lg shadow-md"
+                      >
+                        {scriptLanguage === 'ru' && branch.label.ru}
+                        {scriptLanguage === 'en' && branch.label.en}
+                        {scriptLanguage === 'both' && (
+                          <>
+                            <span>{branch.label.ru}</span>
+                            <span className="block text-sm opacity-90 mt-1">{branch.label.en}</span>
+                          </>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                ) : currentNode.next && (
+                  <button
+                    onClick={() => setScriptStep(currentNode.next)}
+                    className="w-full px-4 py-3 sm:py-4 bg-zohran-blue hover:bg-blue-700 text-white rounded-lg font-bold transition-colors text-base sm:text-lg shadow-md"
+                  >
+                    {scriptLanguage === 'ru' && currentNode.buttonText.ru}
+                    {scriptLanguage === 'en' && currentNode.buttonText.en}
+                    {scriptLanguage === 'both' && (
+                      <>
+                        <span>{currentNode.buttonText.ru}</span>
+                        <span className="text-sm opacity-90"> / {currentNode.buttonText.en}</span>
+                      </>
+                    )}
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Instructions */}
+          <div className="bg-white p-4 sm:p-5 rounded-lg shadow-md border-l-4 border-gray-400">
+            <h3 className="font-bold text-base sm:text-lg mb-2 text-gray-700">How to Use This Script</h3>
+            <ul className="space-y-1 text-sm text-gray-600">
+              <li>• Follow the prompts step by step</li>
+              <li>• Choose the appropriate response based on voter reaction</li>
+              <li>• Use language toggle for Russian/English speakers</li>
+              <li>• Reference official voting sites for specific dates/locations</li>
+              <li>• Keep it conversational and friendly</li>
+            </ul>
+          </div>
+        </div>
+      );
+    }
+    
     if (activeSection === 'priorities') {
       return (
         <div className="space-y-4">
