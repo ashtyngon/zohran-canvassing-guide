@@ -292,8 +292,8 @@ const CanvassingApp = () => {
           activeSection === sectionKey
             ? 'bg-zohran-blue text-white shadow-md'
             : hasMatch
-            ? 'bg-orange-100 text-gray-700 hover:bg-orange-200 border-2 border-zohran-orange'
-            : 'bg-white text-gray-700 hover:bg-gray-50 active:bg-gray-100'
+            ? 'bg-white text-black border-2 border-zohran-orange hover:bg-zohran-orange hover:text-white'
+            : 'bg-white text-black hover:bg-gray-100 active:bg-gray-200 border border-gray-300'
         }`}
       >
         <Icon size={22} className="flex-shrink-0" />
@@ -313,10 +313,10 @@ const CanvassingApp = () => {
     if (searchTerm && !searchResults.hasResults) {
       return (
         <div className="bg-white p-8 rounded-lg shadow-md text-center">
-          <p className="text-gray-600 text-lg mb-2">No results found for "{searchTerm}"</p>
+          <p className="text-black text-lg mb-2">No results found for "{searchTerm}"</p>
           <button
             onClick={() => setSearchTerm('')}
-            className="text-zohran-blue hover:text-blue-700 font-medium"
+            className="text-zohran-blue hover:text-blue-800 font-medium"
           >
             Clear search
           </button>
@@ -328,22 +328,22 @@ const CanvassingApp = () => {
       return (
         <div className="space-y-4 sm:space-y-6">
           {searchTerm && (
-            <div className="bg-orange-100 border-l-4 border-zohran-orange p-4 rounded">
-              <p className="text-gray-900">
+            <div className="bg-white border-2 border-zohran-orange p-4 rounded">
+              <p className="text-black">
                 Found matches in {searchResults.matchingSections.size} sections for "{searchTerm}"
               </p>
             </div>
           )}
           
           <div className="bg-gradient-to-r from-zohran-blue to-zohran-orange text-white p-5 sm:p-6 rounded-xl shadow-lg">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-3">Volunteer Canvassing Guide</h2>
-            <p className="text-orange-100 leading-relaxed text-base sm:text-lg">
-              Russian-speaking Brooklyn voters for Zohran Mamdani's campaign
+            <h2 className="text-2xl sm:text-3xl font-bold mb-3">Brighton Beach Canvassing Guide</h2>
+            <p className="text-white opacity-90 leading-relaxed text-base sm:text-lg">
+              Russian-speaking voters for Zohran Mamdani's NYC mayoral campaign
             </p>
           </div>
           
-          <div className="bg-orange-50 border-l-4 border-zohran-orange p-4 sm:p-5 rounded">
-            <p className="text-gray-900 font-medium text-base sm:text-lg">
+          <div className="bg-white border-2 border-zohran-orange p-4 sm:p-5 rounded">
+            <p className="text-black font-medium text-base sm:text-lg">
               Глáвный совéт: Говори́те об эконóмике, а не об идеолóгии / Key tip: Talk about economics, not ideology
             </p>
           </div>
@@ -351,7 +351,7 @@ const CanvassingApp = () => {
           <div className="grid gap-4">
             <div className="bg-white p-5 sm:p-6 rounded-lg shadow-md border-l-4 border-zohran-blue">
               <h3 className="font-bold text-lg sm:text-xl mb-3 text-zohran-blue">Quick Facts / Быстрые факты</h3>
-              <ul className="space-y-2 text-gray-700 text-base sm:text-lg">
+              <ul className="space-y-2 text-black text-base sm:text-lg">
                 <li>✓ 121,607 рýсскоговорящих / Russian speakers in Brooklyn</li>
                 <li>✓ 70-80% голосýют за республикáнцев / vote Republican</li>
                 <li>✓ Проблéмы: жильё, стóимость, безопáсность / housing, costs, safety</li>
@@ -361,7 +361,7 @@ const CanvassingApp = () => {
 
             <div className="bg-white p-5 sm:p-6 rounded-lg shadow-md border-l-4 border-zohran-orange">
               <h3 className="font-bold text-lg sm:text-xl mb-3 text-zohran-blue">Key Messages / Ключевые сообщения</h3>
-              <ul className="space-y-2 text-gray-700 text-base sm:text-lg">
+              <ul className="space-y-2 text-black text-base sm:text-lg">
                 <li>🏠 Замóрозка арéнды / Rent freeze</li>
                 <li>👶 Бесплáтный детсáд / Free childcare (6 weeks-5 years)</li>
                 <li>💰 $30 зарплáта к 2030 / $30 minimum wage by 2030</li>
@@ -377,8 +377,8 @@ const CanvassingApp = () => {
       return (
         <div className="space-y-4">
           {searchTerm && (
-            <div className="bg-orange-100 border-l-4 border-zohran-orange p-4 rounded mb-4">
-              <p className="text-gray-900">Showing results for "{searchTerm}"</p>
+            <div className="bg-white border-2 border-zohran-orange p-4 rounded mb-4">
+              <p className="text-black font-medium">Showing results for "{searchTerm}"</p>
             </div>
           )}
           <h2 className="text-2xl sm:text-3xl font-bold text-zohran-blue mb-4">Key Priorities</h2>
@@ -386,10 +386,10 @@ const CanvassingApp = () => {
             <div key={idx} className="bg-white p-5 sm:p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
               <h3 className="font-bold text-lg sm:text-xl text-zohran-blue mb-3">{item.title}</h3>
               <div className="space-y-3">
-                <div className="bg-blue-50 p-4 rounded border-l-4 border-zohran-blue">
-                  <p className="text-gray-800 font-medium text-base sm:text-lg">{item.russian}</p>
+                <div className="bg-white p-4 rounded border-2 border-zohran-blue">
+                  <p className="text-black font-medium text-base sm:text-lg">{item.russian}</p>
                 </div>
-                <p className="text-gray-600 italic text-sm sm:text-base">{item.english}</p>
+                <p className="text-black italic text-sm sm:text-base">{item.english}</p>
                 {item.pronunciation && (
                   <p className="text-zohran-blue text-sm">🔊 {item.pronunciation}</p>
                 )}
@@ -409,8 +409,8 @@ const CanvassingApp = () => {
             </div>
           )}
           <h2 className="text-2xl sm:text-3xl font-bold text-zohran-blue mb-4">Persuasion Questions</h2>
-          <div className="bg-gradient-to-r from-blue-50 to-orange-50 p-5 sm:p-6 rounded-lg shadow-md border-l-4 border-zohran-blue mb-6">
-            <p className="text-zohran-blue text-sm sm:text-base">
+          <div className="bg-white p-5 sm:p-6 rounded-lg shadow-md border-2 border-zohran-blue mb-6">
+            <p className="text-black font-medium text-sm sm:text-base">
               Questions to help voters see voting for Mamdani serves their interests, and that Trump's fear-mongering works against them.
             </p>
           </div>
@@ -420,17 +420,17 @@ const CanvassingApp = () => {
                 <span className="text-white font-semibold text-sm sm:text-base">{q.category}</span>
               </div>
               <div className="space-y-3">
-                <div className="bg-blue-50 p-4 rounded border-l-4 border-zohran-blue">
-                  <p className="text-gray-800 font-medium mb-2 text-base sm:text-lg">{q.russian}</p>
-                  <p className="text-gray-600 italic text-sm sm:text-base">{q.english}</p>
+                <div className="bg-white p-4 rounded border-2 border-zohran-blue">
+                  <p className="text-black font-medium mb-2 text-base sm:text-lg">{q.russian}</p>
+                  <p className="text-black italic text-sm sm:text-base">{q.english}</p>
                   {q.pronunciation && (
-                    <p className="text-zohran-blue text-sm mt-2">🔊 {q.pronunciation}</p>
+                    <p className="text-zohran-blue font-medium text-sm mt-2">🔊 {q.pronunciation}</p>
                   )}
                 </div>
                 {q.followup && (
-                  <div className="bg-orange-50 p-3 sm:p-4 rounded border-l-4 border-zohran-orange">
-                    <p className="text-gray-900 font-medium text-sm sm:text-base">
-                      <span className="text-zohran-orange">Follow-up:</span> {q.followup}
+                  <div className="bg-white p-3 sm:p-4 rounded border-2 border-zohran-orange">
+                    <p className="text-black font-medium text-sm sm:text-base">
+                      <span className="text-zohran-orange font-bold">Follow-up:</span> {q.followup}
                     </p>
                   </div>
                 )}
@@ -450,7 +450,7 @@ const CanvassingApp = () => {
             </div>
           )}
           <h2 className="text-2xl sm:text-3xl font-bold text-zohran-blue mb-4">Identity-Based Persuasion</h2>
-          <p className="text-gray-700 bg-blue-50 p-4 sm:p-5 rounded-lg border-l-4 border-zohran-blue text-base sm:text-lg">
+          <p className="text-black bg-white p-4 sm:p-5 rounded-lg border-2 border-zohran-blue text-base sm:text-lg font-medium">
             Tailored talking points for specific community groups in Brighton Beach
           </p>
           {affinityGroups.map((group, idx) => (
@@ -458,12 +458,12 @@ const CanvassingApp = () => {
               <h3 className="font-bold text-xl sm:text-2xl text-zohran-blue mb-4">{group.group}</h3>
               <div className="space-y-4">
                 {group.points.map((point, pidx) => (
-                  <div key={pidx} className="bg-gradient-to-r from-blue-50 to-orange-50 p-4 sm:p-5 rounded-lg">
+                  <div key={pidx} className="bg-white p-4 sm:p-5 rounded-lg border border-gray-300">
                     <div className="space-y-2">
-                      <p className="text-gray-800 font-medium leading-relaxed text-base sm:text-lg">{point.russian}</p>
-                      <p className="text-gray-600 italic text-sm sm:text-base leading-relaxed">{point.english}</p>
+                      <p className="text-black font-medium leading-relaxed text-base sm:text-lg">{point.russian}</p>
+                      <p className="text-black italic text-sm sm:text-base leading-relaxed">{point.english}</p>
                       {point.pronunciation && (
-                        <p className="text-zohran-blue text-sm">🔊 {point.pronunciation}</p>
+                        <p className="text-zohran-blue font-medium text-sm">🔊 {point.pronunciation}</p>
                       )}
                     </div>
                   </div>
@@ -484,13 +484,13 @@ const CanvassingApp = () => {
             </div>
           )}
           <h2 className="text-2xl sm:text-3xl font-bold text-zohran-blue mb-4">Zohran's Platform</h2>
-          <p className="text-gray-600 mb-4 text-base sm:text-lg">He will... / Он...</p>
+          <p className="text-black mb-4 text-base sm:text-lg font-medium">He will... / Он...</p>
           {platform.map((item, idx) => (
             <div key={idx} className="bg-white p-5 sm:p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow border-l-4 border-zohran-orange">
-              <h3 className="font-bold text-zohran-blue mb-2 text-base sm:text-lg">✓ {item.title}</h3>
+              <h3 className="font-bold text-black mb-2 text-base sm:text-lg">✓ {item.title}</h3>
               <div className="space-y-2">
-                <p className="text-gray-800 text-base sm:text-lg">{item.russian}</p>
-                <p className="text-gray-600 italic text-sm sm:text-base">{item.english}</p>
+                <p className="text-black text-base sm:text-lg">{item.russian}</p>
+                <p className="text-black italic text-sm sm:text-base">{item.english}</p>
               </div>
             </div>
           ))}
@@ -511,10 +511,10 @@ const CanvassingApp = () => {
             <div key={idx} className="bg-white p-5 sm:p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
               <h3 className="font-bold text-lg sm:text-xl text-zohran-red mb-3">⚠️ {item.title}</h3>
               <div className="space-y-3">
-                <div className="bg-red-50 p-4 rounded border-l-4 border-zohran-red">
-                  <p className="text-gray-800 leading-relaxed text-base sm:text-lg">{item.russian}</p>
+                <div className="bg-white p-4 rounded border-2 border-zohran-red">
+                  <p className="text-black leading-relaxed text-base sm:text-lg">{item.russian}</p>
                 </div>
-                <p className="text-gray-600 italic text-sm sm:text-base leading-relaxed">{item.english}</p>
+                <p className="text-black italic text-sm sm:text-base leading-relaxed">{item.english}</p>
               </div>
             </div>
           ))}
@@ -531,16 +531,16 @@ const CanvassingApp = () => {
             </div>
           )}
           <h2 className="text-2xl sm:text-3xl font-bold text-zohran-blue mb-4">About Cuomo</h2>
-          <div className="bg-red-50 border-l-4 border-zohran-red p-4 sm:p-5 rounded mb-4">
-            <p className="text-red-900 font-medium text-base sm:text-lg">
+          <div className="bg-white border-2 border-zohran-red p-4 sm:p-5 rounded mb-4">
+            <p className="text-zohran-red font-bold text-base sm:text-lg">
               ⚠️ Important information about the main opponent
             </p>
           </div>
           {cuomoPoints.map((item, idx) => (
             <div key={idx} className="bg-white p-5 sm:p-6 rounded-lg shadow-md">
               <div className="space-y-2">
-                <p className="text-gray-800 font-medium text-base sm:text-lg">{item.russian}</p>
-                <p className="text-gray-600 italic text-sm sm:text-base">{item.english}</p>
+                <p className="text-black font-medium text-base sm:text-lg">{item.russian}</p>
+                <p className="text-black italic text-sm sm:text-base">{item.english}</p>
               </div>
             </div>
           ))}
@@ -563,7 +563,7 @@ const CanvassingApp = () => {
             <p className="leading-relaxed mb-2 text-base sm:text-lg">
               Zohran won Brighton Beach — a neighborhood that voted 75-90% for Trump in 2024.
             </p>
-            <p className="text-orange-100 text-sm sm:text-base">
+            <p className="text-white opacity-90 text-sm sm:text-base">
               How? Uzbek, Tajik, and Pakistani Muslims overcame Russian-speaking Jewish opposition.
             </p>
           </div>
@@ -572,107 +572,107 @@ const CanvassingApp = () => {
             <h3 className="font-bold text-lg sm:text-xl text-zohran-blue mb-3">📊 Quick Stats</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm sm:text-base">
               <div className="bg-gray-50 p-3 sm:p-4 rounded">
-                <p className="font-semibold text-gray-800">Russian speakers:</p>
-                <p className="text-gray-600">121,607 in Brooklyn</p>
+                <p className="font-semibold text-black">Russian speakers:</p>
+                <p className="text-black">121,607 in Brooklyn</p>
               </div>
               <div className="bg-gray-50 p-3 sm:p-4 rounded">
-                <p className="font-semibold text-gray-800">Typical vote:</p>
-                <p className="text-gray-600">70-80% Republican</p>
+                <p className="font-semibold text-black">Typical vote:</p>
+                <p className="text-black">70-80% Republican</p>
               </div>
               <div className="bg-gray-50 p-3 sm:p-4 rounded">
-                <p className="font-semibold text-gray-800">Don't speak English:</p>
-                <p className="text-gray-600">36%</p>
+                <p className="font-semibold text-black">Don't speak English:</p>
+                <p className="text-black">36%</p>
               </div>
               <div className="bg-gray-50 p-3 sm:p-4 rounded">
-                <p className="font-semibold text-gray-800">Median age:</p>
-                <p className="text-gray-600">47.9 years</p>
+                <p className="font-semibold text-black">Median age:</p>
+                <p className="text-black">47.9 years</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-orange-50 p-5 sm:p-6 rounded-lg shadow-md border-l-4 border-zohran-orange">
-            <h3 className="font-bold text-lg sm:text-xl text-zohran-orange mb-3">🔑 How Zohran Won Brighton Beach</h3>
+          <div className="bg-white p-5 sm:p-6 rounded-lg shadow-md border-2 border-zohran-orange">
+            <h3 className="font-bold text-lg sm:text-xl text-black mb-3">🔑 How Zohran Won Brighton Beach</h3>
             <div className="space-y-3 text-sm sm:text-base">
               <div className="bg-white p-3 sm:p-4 rounded">
-                <p className="font-semibold text-gray-800 mb-1">Most Russian Jews couldn't vote against him</p>
-                <p className="text-gray-600">They're registered Republicans. Only Democrats vote in Dem primary.</p>
+                <p className="font-semibold text-black mb-1">Most Russian Jews couldn't vote against him</p>
+                <p className="text-black">They're registered Republicans. Only Democrats vote in Dem primary.</p>
               </div>
               <div className="bg-white p-3 sm:p-4 rounded">
-                <p className="font-semibold text-gray-800 mb-1">Central Asian Muslims turned out in force</p>
-                <p className="text-gray-600">Uzbeks, Tajiks, Kazakhs, Kyrgyz — registered Democrats, voted for "their guy"</p>
+                <p className="font-semibold text-black mb-1">Central Asian Muslims turned out in force</p>
+                <p className="text-black">Uzbeks, Tajiks, Kazakhs, Kyrgyz — registered Democrats, voted for "their guy"</p>
               </div>
               <div className="bg-white p-3 sm:p-4 rounded">
-                <p className="font-semibold text-gray-800 mb-1">Palestine position was decisive</p>
-                <p className="text-gray-600">Many voted for him not because he's socialist, but because he's pro-Palestine</p>
+                <p className="font-semibold text-black mb-1">Palestine position was decisive</p>
+                <p className="text-black">Many voted for him not because he's socialist, but because he's pro-Palestine</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-red-50 p-5 sm:p-6 rounded-lg shadow-md border-l-4 border-zohran-red">
+          <div className="bg-white p-5 sm:p-6 rounded-lg shadow-md border-2 border-zohran-red">
             <h3 className="font-bold text-lg sm:text-xl text-zohran-red mb-3">⚠️ Opposition Voices You'll Hear</h3>
             <div className="space-y-4 text-sm sm:text-base">
               <div className="bg-white p-4 sm:p-5 rounded-lg">
                 <p className="font-semibold text-zohran-red mb-2">Inna Vernikov (City Council, Brighton Beach):</p>
-                <p className="text-gray-700 italic mb-2">"I grew up under communism. I know what 'government-run grocery stores' lead to: bread lines, devastation, no choice."</p>
-                <p className="text-gray-600 text-sm">She won her Republican primary decisively — her anti-socialist message resonates strongly.</p>
+                <p className="text-black italic mb-2">"I grew up under communism. I know what 'government-run grocery stores' lead to: bread lines, devastation, no choice."</p>
+                <p className="text-black text-sm">She won her Republican primary decisively — her anti-socialist message resonates strongly.</p>
               </div>
               <div className="bg-white p-4 sm:p-5 rounded-lg">
                 <p className="font-semibold text-zohran-red mb-2">Gregory Lyakhov (Columnist, child of Soviet immigrants):</p>
-                <p className="text-gray-700 italic mb-2">"My grandparents stood in lines for hours for bread. Will I have to flee my own city?"</p>
-                <p className="text-gray-600 text-sm">Wrote multiple op-eds: "My Parents Stood in the Breadlines Mamdani Wants to Bring to NYC"</p>
+                <p className="text-black italic mb-2">"My grandparents stood in lines for hours for bread. Will I have to flee my own city?"</p>
+                <p className="text-black text-sm">Wrote multiple op-eds: "My Parents Stood in the Breadlines Mamdani Wants to Bring to NYC"</p>
               </div>
               <div className="bg-white p-4 sm:p-5 rounded-lg">
                 <p className="font-semibold text-zohran-red mb-2">Brighton Beach News (Russian-language paper):</p>
-                <p className="text-gray-700 italic">"Never has America's most Jewish city been so close to falling into hands of convinced antisemite."</p>
+                <p className="text-black italic">"Never has America's most Jewish city been so close to falling into hands of convinced antisemite."</p>
               </div>
             </div>
-            <div className="bg-red-100 p-3 sm:p-4 rounded mt-4">
-              <p className="text-red-900 font-medium text-sm sm:text-base">
+            <div className="bg-zohran-red text-white p-3 sm:p-4 rounded mt-4">
+              <p className="font-medium text-sm sm:text-base">
                 These voices represent genuine Soviet trauma — acknowledge it, don't dismiss it
               </p>
             </div>
           </div>
 
-          <div className="bg-blue-50 p-5 sm:p-6 rounded-lg shadow-md border-l-4 border-zohran-blue">
+          <div className="bg-white p-5 sm:p-6 rounded-lg shadow-md border-2 border-zohran-blue">
             <h3 className="font-bold text-lg sm:text-xl text-zohran-blue mb-3">🎤 Assembly Member Mikhail Novakhov Explains</h3>
-            <p className="text-gray-600 text-sm sm:text-base mb-3 italic">Interview with Novaya Gazeta, July 11, 2025</p>
+            <p className="text-black text-sm sm:text-base mb-3 italic">Interview with Novaya Gazeta, July 11, 2025</p>
             
             <div className="space-y-3 text-sm sm:text-base">
               <div className="bg-white p-3 sm:p-4 rounded">
                 <p className="font-semibold text-zohran-blue mb-1">On why Russian-speakers couldn't stop him:</p>
-                <p className="text-gray-700">"Significant portion of Russian-speaking population are registered Republicans. With all their desire, they simply couldn't participate in voting for Democratic candidate."</p>
+                <p className="text-black">"Significant portion of Russian-speaking population are registered Republicans. With all their desire, they simply couldn't participate in voting for Democratic candidate."</p>
               </div>
 
               <div className="bg-white p-3 sm:p-4 rounded">
                 <p className="font-semibold text-zohran-blue mb-1">On Muslim voters:</p>
-                <p className="text-gray-700">"Brighton Beach has fairly large Muslim population — immigrants from Pakistan, Palestine, Jordan. For them, he is 'their guy,' and his leftist views recede into background."</p>
+                <p className="text-black">"Brighton Beach has fairly large Muslim population — immigrants from Pakistan, Palestine, Jordan. For them, he is 'their guy,' and his leftist views recede into background."</p>
               </div>
 
               <div className="bg-white p-3 sm:p-4 rounded">
                 <p className="font-semibold text-zohran-blue mb-1">What poll workers saw:</p>
-                <p className="text-gray-700">"They told me: 'Misha, many people coming to vote.' By appearance, by language, it was clear who these voters were. Very many came to vote specifically for Mamdani."</p>
+                <p className="text-black">"They told me: 'Misha, many people coming to vote.' By appearance, by language, it was clear who these voters were. Very many came to vote specifically for Mamdani."</p>
               </div>
 
               <div className="bg-white p-3 sm:p-4 rounded">
                 <p className="font-semibold text-zohran-blue mb-1">On the Palestine factor:</p>
-                <p className="text-gray-700">"Significant part voted for Mamdani not because he's socialist, but because he's perceived as 'their own' — sympathizing with Palestine, criticizing Israel. This was decisive factor."</p>
+                <p className="text-black">"Significant part voted for Mamdani not because he's socialist, but because he's perceived as 'their own' — sympathizing with Palestine, criticizing Israel. This was decisive factor."</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-blue-50 p-5 sm:p-6 rounded-lg shadow-md border-l-4 border-zohran-blue">
+          <div className="bg-white p-5 sm:p-6 rounded-lg shadow-md border-2 border-zohran-blue">
             <h3 className="font-bold text-lg sm:text-xl text-zohran-blue mb-3">🌏 Central Asian Communities</h3>
-            <p className="text-gray-700 text-sm sm:text-base mb-3">Uzbeks, Tajiks, Kazakhs, Kyrgyz — the quiet majority that decided Brighton Beach</p>
+            <p className="text-black text-sm sm:text-base mb-3">Uzbeks, Tajiks, Kazakhs, Kyrgyz — the quiet majority that decided Brighton Beach</p>
             
             <div className="space-y-3 text-sm sm:text-base">
               <div className="bg-white p-3 sm:p-4 rounded">
                 <p className="font-semibold text-zohran-blue mb-1">Why they came to Brighton Beach:</p>
-                <p className="text-gray-700">"Russian language still binds them together" — they speak Russian from Soviet times, but are predominantly Muslim</p>
+                <p className="text-black">"Russian language still binds them together" — they speak Russian from Soviet times, but are predominantly Muslim</p>
               </div>
 
               <div className="bg-white p-3 sm:p-4 rounded">
                 <p className="font-semibold text-zohran-blue mb-1">What matters to them:</p>
-                <ul className="text-gray-700 space-y-1 ml-4">
+                <ul className="text-black space-y-1 ml-4">
                   <li>• First Muslim mayor = historic representation</li>
                   <li>• Zohran campaigned in Uzbek language</li>
                   <li>• Pro-Palestine position resonates deeply</li>
@@ -682,35 +682,35 @@ const CanvassingApp = () => {
 
               <div className="bg-white p-3 sm:p-4 rounded">
                 <p className="font-semibold text-zohran-blue mb-1">Brighton Beach today:</p>
-                <p className="text-gray-700">"No longer just Odessa. Now Uzbeks, Kyrgyz, Kazakhs, Tajiks." — hosts Central Asian Nowruz celebrations</p>
+                <p className="text-black">"No longer just Odessa. Now Uzbeks, Kyrgyz, Kazakhs, Tajiks." — hosts Central Asian Nowruz celebrations</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-orange-50 p-5 sm:p-6 rounded-lg shadow-md border-l-4 border-zohran-orange">
+          <div className="bg-white p-5 sm:p-6 rounded-lg shadow-md border-2 border-zohran-orange">
             <h3 className="font-bold text-lg sm:text-xl text-zohran-orange mb-3">😰 What Russian-Speaking Jews Fear</h3>
             
             <div className="space-y-3 text-sm sm:text-base">
-              <div className="bg-white p-3 sm:p-4 rounded">
-                <p className="font-semibold text-zohran-orange mb-2">1. Soviet Trauma: "We've seen this before"</p>
-                <p className="text-gray-700 mb-2">Government control of economy = Soviet shortages</p>
-                <p className="text-gray-600 text-sm">Trigger policies: Rent freeze, city grocery stores, $30 min wage, wealth redistribution</p>
+              <div className="bg-white p-3 sm:p-4 rounded border border-gray-300">
+                <p className="font-semibold text-black mb-2">1. Soviet Trauma: "We've seen this before"</p>
+                <p className="text-black mb-2">Government control of economy = Soviet shortages</p>
+                <p className="text-black text-sm italic">Trigger policies: Rent freeze, city grocery stores, $30 min wage, wealth redistribution</p>
               </div>
 
-              <div className="bg-white p-3 sm:p-4 rounded">
-                <p className="font-semibold text-zohran-orange mb-2">2. Israel/Palestine: "Antisemite"</p>
-                <p className="text-gray-700 mb-2">Zohran's positions seen as threatening Jewish safety</p>
-                <p className="text-gray-600 text-sm">Concerns: BDS support, calling Gaza "genocide," would arrest Netanyahu</p>
+              <div className="bg-white p-3 sm:p-4 rounded border border-gray-300">
+                <p className="font-semibold text-black mb-2">2. Israel/Palestine: "Antisemite"</p>
+                <p className="text-black mb-2">Zohran's positions seen as threatening Jewish safety</p>
+                <p className="text-black text-sm italic">Concerns: BDS support, calling Gaza "genocide," would arrest Netanyahu</p>
               </div>
 
-              <div className="bg-white p-3 sm:p-4 rounded">
-                <p className="font-semibold text-zohran-orange mb-2">3. Cultural Anxiety: "America will change"</p>
-                <p className="text-gray-700">Sanctuary city policies, Muslim identity, Qatar conspiracy theories</p>
+              <div className="bg-white p-3 sm:p-4 rounded border border-gray-300">
+                <p className="font-semibold text-black mb-2">3. Cultural Anxiety: "America will change"</p>
+                <p className="text-black">Sanctuary city policies, Muslim identity, Qatar conspiracy theories</p>
               </div>
             </div>
 
-            <div className="bg-orange-100 p-3 sm:p-4 rounded mt-4">
-              <p className="text-gray-900 font-medium text-sm">
+            <div className="bg-zohran-orange text-white p-3 sm:p-4 rounded mt-4">
+              <p className="font-medium text-sm">
                 Common phrases: "I lived under communism" • "Bread lines" • "Government grocery stores" • "We ran away from socialism"
               </p>
             </div>
@@ -722,7 +722,7 @@ const CanvassingApp = () => {
             <div className="space-y-3 text-sm sm:text-base">
               <div className="bg-white p-3 sm:p-4 rounded">
                 <p className="font-semibold text-zohran-blue mb-2">Where Zohran WON:</p>
-                <ul className="text-gray-700 space-y-1">
+                <ul className="text-black space-y-1">
                   <li>• Brighton Beach (Muslim voters)</li>
                   <li>• Chinatown: +28 points</li>
                   <li>• Jackson Heights (Bangladeshi): +26</li>
@@ -734,7 +734,7 @@ const CanvassingApp = () => {
 
               <div className="bg-white p-3 sm:p-4 rounded">
                 <p className="font-semibold text-zohran-red mb-2">Where Cuomo WON:</p>
-                <ul className="text-gray-700 space-y-1">
+                <ul className="text-black space-y-1">
                   <li>• Sheepshead Bay</li>
                   <li>• Manhattan Beach</li>
                   <li>• Midwood/Borough Park: 78%</li>
@@ -743,20 +743,20 @@ const CanvassingApp = () => {
               </div>
             </div>
 
-            <div className="bg-blue-100 p-3 sm:p-4 rounded mt-4">
-              <p className="text-zohran-blue font-medium text-sm sm:text-base">
+            <div className="bg-zohran-blue text-white p-3 sm:p-4 rounded mt-4">
+              <p className="font-medium text-sm sm:text-base">
                 📊 Overall: Zohran won primary by 12 points with coalition of working-class immigrants, South Asians, Muslims, progressive voters
               </p>
             </div>
           </div>
 
-          <div className="bg-indigo-50 p-5 sm:p-6 rounded-lg shadow-md border-l-4 border-indigo-500">
-            <h3 className="font-bold text-lg sm:text-xl text-indigo-800 mb-3">💪 Your Canvassing Strategy</h3>
+          <div className="bg-white p-5 sm:p-6 rounded-lg shadow-md border-2 border-zohran-blue">
+            <h3 className="font-bold text-lg sm:text-xl text-zohran-blue mb-3">💪 Your Canvassing Strategy</h3>
             
             <div className="space-y-3 text-sm sm:text-base">
               <div className="bg-white p-4 sm:p-5 rounded">
-                <p className="font-semibold text-indigo-700 mb-2">✓ DO:</p>
-                <ul className="text-gray-700 space-y-1 ml-4">
+                <p className="font-semibold text-zohran-blue mb-2">✓ DO:</p>
+                <ul className="text-black space-y-1 ml-4">
                   <li>• Lead with economics: rent freeze, free childcare, $30 wage</li>
                   <li>• Use crime data: murders -34%, shootings -23%</li>
                   <li>• Acknowledge Soviet trauma, then explain differences</li>
@@ -768,7 +768,7 @@ const CanvassingApp = () => {
 
               <div className="bg-white p-4 sm:p-5 rounded">
                 <p className="font-semibold text-zohran-red mb-2">✗ DON'T:</p>
-                <ul className="text-gray-700 space-y-1 ml-4">
+                <ul className="text-black space-y-1 ml-4">
                   <li>• Say "socialism" unless they bring it up</li>
                   <li>• Dismiss their Soviet experiences</li>
                   <li>• Argue about Israel/Palestine extensively</li>
@@ -779,46 +779,46 @@ const CanvassingApp = () => {
             </div>
           </div>
 
-          <div className="bg-gradient-to-r from-blue-50 to-orange-50 p-5 sm:p-6 rounded-lg shadow-md border-l-4 border-zohran-orange">
+          <div className="bg-white p-5 sm:p-6 rounded-lg shadow-md border-2 border-zohran-orange">
             <h3 className="font-bold text-lg sm:text-xl text-zohran-orange mb-3">🗣️ Key Phrases That Work</h3>
             
             <div className="space-y-2 text-sm sm:text-base">
-              <div className="bg-white p-3 rounded">
-                <p className="text-gray-700">"Who's robbing you now — government or your landlord?"</p>
+              <div className="bg-white p-3 rounded border border-gray-300">
+                <p className="text-black font-medium">"Who's robbing you now — government or your landlord?"</p>
               </div>
-              <div className="bg-white p-3 rounded">
-                <p className="text-gray-700">"Cuomo won't freeze rent — it goes up 5% next year"</p>
+              <div className="bg-white p-3 rounded border border-gray-300">
+                <p className="text-black font-medium">"Cuomo won't freeze rent — it goes up 5% next year"</p>
               </div>
-              <div className="bg-white p-3 rounded">
-                <p className="text-gray-700">"Trump prefers Cuomo — they can make deals together"</p>
+              <div className="bg-white p-3 rounded border border-gray-300">
+                <p className="text-black font-medium">"Trump prefers Cuomo — they can make deals together"</p>
               </div>
-              <div className="bg-white p-3 rounded">
-                <p className="text-gray-700">"France, Germany, Japan — capitalist with free childcare"</p>
+              <div className="bg-white p-3 rounded border border-gray-300">
+                <p className="text-black font-medium">"France, Germany, Japan — capitalist with free childcare"</p>
               </div>
-              <div className="bg-white p-3 rounded">
-                <p className="text-gray-700">"Will your grandchildren afford to stay here?"</p>
+              <div className="bg-white p-3 rounded border border-gray-300">
+                <p className="text-black font-medium">"Will your grandchildren afford to stay here?"</p>
               </div>
             </div>
           </div>
 
           <div className="bg-gray-100 p-5 sm:p-6 rounded-lg shadow-md border-l-4 border-gray-400">
-            <h3 className="font-bold text-lg sm:text-xl text-gray-800 mb-3">❓ The Missing Voices</h3>
-            <p className="text-gray-700 text-sm sm:text-base mb-3">Important communities we have limited data on:</p>
+            <h3 className="font-bold text-lg sm:text-xl text-black mb-3">❓ The Missing Voices</h3>
+            <p className="text-black text-sm sm:text-base mb-3">Important communities we have limited data on:</p>
             
             <div className="space-y-3 text-sm sm:text-base">
               <div className="bg-white p-3 sm:p-4 rounded">
-                <p className="font-semibold text-gray-700 mb-1">Ukrainians (80,000 in NYC):</p>
-                <p className="text-gray-600">Almost no coverage found. Zohran said he'd arrest Putin — but no Ukrainian response documented.</p>
+                <p className="font-semibold text-black mb-1">Ukrainians (80,000 in NYC):</p>
+                <p className="text-black">Almost no coverage found. Zohran said he'd arrest Putin — but no Ukrainian response documented.</p>
               </div>
               
               <div className="bg-white p-3 sm:p-4 rounded">
-                <p className="font-semibold text-gray-700 mb-1">Georgians & Armenians:</p>
-                <p className="text-gray-600">No specific coverage. Likely align with Russian-Jewish community on socialism fears.</p>
+                <p className="font-semibold text-black mb-1">Georgians & Armenians:</p>
+                <p className="text-black">No specific coverage. Likely align with Russian-Jewish community on socialism fears.</p>
               </div>
             </div>
 
             <div className="bg-gray-200 p-3 sm:p-4 rounded mt-4">
-              <p className="text-gray-800 text-sm">
+              <p className="text-black text-sm">
                 💡 Why? Discussions happen in closed Telegram/WhatsApp groups, not public forums. Russian-language politics is mostly invisible to English researchers.
               </p>
             </div>
@@ -875,8 +875,8 @@ const CanvassingApp = () => {
                 </ul>
               </div>
 
-              <div className="bg-blue-50 p-4 rounded mt-4">
-                <p className="text-zohran-blue text-sm">
+              <div className="bg-white border border-zohran-blue p-4 rounded mt-4">
+                <p className="text-black text-sm">
                   <strong>Research Note:</strong> This guide synthesizes public statements, news coverage, and voting analysis from April-September 2025. Russian-language discussions largely occur in closed Telegram/WhatsApp groups.
                 </p>
               </div>
@@ -895,8 +895,8 @@ const CanvassingApp = () => {
         <div className="max-w-6xl mx-auto px-4 py-4 sm:py-5">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl sm:text-2xl font-bold text-zohran-orange">ZOHRAN</h1>
-              <p className="text-orange-200 text-sm sm:text-base">for New York City</p>
+              <h1 className="text-xl sm:text-2xl font-bold text-white">ZOHRAN</h1>
+              <p className="text-white opacity-90 text-sm sm:text-base">for Brighton Beach</p>
             </div>
             <button
               onClick={() => setMenuOpen(!menuOpen)}
@@ -908,13 +908,13 @@ const CanvassingApp = () => {
           </div>
           
           <div className="mt-3 sm:mt-4 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-orange-300" size={20} />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white opacity-70" size={20} />
             <input
               type="text"
               placeholder="Search all content..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 sm:py-2.5 rounded-lg bg-white bg-opacity-20 text-white placeholder-orange-200 focus:outline-none focus:ring-2 focus:ring-zohran-orange text-sm sm:text-base"
+              className="w-full pl-10 pr-4 py-2 sm:py-2.5 rounded-lg bg-white bg-opacity-20 text-white placeholder-white placeholder-opacity-70 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 text-sm sm:text-base"
             />
           </div>
         </div>
