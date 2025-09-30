@@ -5,12 +5,12 @@ const CanvassingApp = () => {
   const [activeSection, setActiveSection] = useState('home');
   const [searchTerm, setSearchTerm] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
-  const [scriptStep, setScriptStep] = useState('intro');
+  const [scriptStep, setScriptStep] = useState('start');
   const [scriptLanguage, setScriptLanguage] = useState('both'); // 'ru', 'en', 'both'
 
   const sections = {
     home: { title: 'Home', icon: Home },
-    script: { title: 'Canvassing Script', icon: MessageSquare },
+    script: { title: 'Script', icon: MessageSquare },
     priorities: { title: 'Key Priorities', icon: AlertCircle },
     questions: { title: 'Persuasion Questions', icon: Users },
     affinity: { title: 'Identity-Based Persuasion', icon: Users },
@@ -400,80 +400,86 @@ const CanvassingApp = () => {
 
     if (activeSection === 'script') {
       const scriptNodes = {
-        intro: {
-          ru: 'Здравствуйте! [ИМЯ]? Я [ВАШЕ ИМЯ], волонтёр кампании демократического кандидата в мэры — Зохрана Мамдани. 4 ноября выборы мэра.',
-          en: 'Hi! Is [VOTER NAME] available? I\'m [YOUR NAME], a volunteer for the Democratic candidate for mayor, Zohran Mamdani. The election is on November 4.',
-          next: 'offer',
+        start: {
+          ru: 'Здравствуйте! [ИМЯ]? Я [ВАШЕ ИМЯ], живу здесь рядом на [улица/район]. Обхожу соседей перед выборами мэра — метро опять подорожало, аренда растёт каждый год. Вас это тоже достало?',
+          en: 'Hi! [NAME]? I\'m [YOUR NAME], I live nearby on [street]. I\'m talking to neighbors before the mayor election - subway prices went up again, rent keeps rising every year. Are you fed up with this too?',
+          note: {
+            ru: 'ИХ РЕАКЦИЯ = ВАШ КОМПАС\n• Соглашаются → продолжайте\n• Молчат/думают → дайте секунду, потом продолжайте\n• Злятся на всё → это ваш человек, работайте с этой энергией',
+            en: 'THEIR REACTION = YOUR COMPASS\n• Agree → continue\n• Silent/thinking → give a second, then continue\n• Angry at everything → this is your person, work with that energy'
+          },
+          next: 'check',
           buttonText: { ru: 'Дальше', en: 'Next' }
         },
-        offer: {
-          ru: 'Бесплатные и быстрые автобусы; заморозка аренды для жильцов с регулируемой ставкой; доступный уход за детьми. Что важнее для вас лично?',
-          en: 'Free & fast buses; a rent freeze for rent-stabilized tenants; universal childcare. Which matters most to you?',
-          next: 'support',
-          buttonText: { ru: 'Дальше', en: 'Next' }
-        },
-        support: {
-          ru: 'Я поддерживаю Зохрана, потому что ___. А вы планируете голосовать за него?',
-          en: 'I\'m voting for Zohran because ___. Do you plan to vote for him?',
+        check: {
+          ru: 'Я поддерживаю Зохрана Мамдани — он обещает сделать автобусы бесплатными. Представляете, сколько семья сэкономит? Что вы об этом думаете?',
+          en: 'I support Zohran Mamdani - he promises to make buses free. Can you imagine how much a family would save? What do you think about this?',
+          note: {
+            ru: 'По ответу сразу понятно:',
+            en: 'The answer immediately shows:'
+          },
           branches: [
-            { label: { ru: 'Да, твёрдо', en: 'Yes, definitely' }, next: 'yes' },
-            { label: { ru: 'Скорее да / Не уверен', en: 'Lean/Undecided' }, next: 'lean' },
-            { label: { ru: 'Против', en: 'Opposed' }, next: 'opposed' }
+            { label: { ru: '👍 «Было бы здорово!»', en: '👍 "That would be great!"' }, next: 'supporter' },
+            { label: { ru: '🤷 «А кто это?» / «Как это возможно?»', en: '🤷 "Who is that?" / "How is that possible?"' }, next: 'undecided' },
+            { label: { ru: '👎 «Это нереально» / «Я за другого»', en: '👎 "That\'s unrealistic" / "I support someone else"' }, next: 'opposed' }
           ]
         },
-        yes: {
-          ru: 'Отлично! 4 ноября участки открыты с 6:00 до 21:00. Досрочное голосование — даты и часы смотрите на официальном сайте.',
-          en: 'Great! On Nov 4, polls are open 6AM–9PM. For early voting dates/hours, read from the official site.',
-          next: 'plan',
-          buttonText: { ru: 'К плану голосования', en: 'To voting plan' }
+        supporter: {
+          ru: 'Правда же! И это не пустые обещания — он уже провёл законы о защите арендаторов в Ассамблее штата. Вы будете голосовать 4 ноября?',
+          en: 'Right! And these aren\'t empty promises - he already passed tenant protection laws in the State Assembly. Will you vote November 4th?',
+          next: 'supporter2',
+          buttonText: { ru: 'Да, буду голосовать', en: 'Yes, I\'ll vote' }
         },
-        lean: {
-          ru: 'Понимаю. Что для вас самое важное от мэра? (Коротко свяжите ответ с пунктами программы.)',
-          en: 'I hear you. What matters most in a mayor? (Briefly tie back to policy.)',
-          next: 'plan',
-          buttonText: { ru: 'К плану голосования', en: 'To voting plan' }
+        supporter2: {
+          ru: 'Отлично! Кстати, можно досрочно с 25 октября — очередей нет вообще. Знаете, где ваш участок?',
+          en: 'Great! By the way, you can vote early from October 25 - no lines at all. Do you know where your polling site is?',
+          next: 'volunteer',
+          buttonText: { ru: 'Дальше', en: 'Next' }
+        },
+        volunteer: {
+          ru: 'Мы в субботу идём по району, рассказываем соседям. Хотите с нами? Два часа максимум.',
+          en: 'We\'re walking the neighborhood Saturday, talking to neighbors. Want to join? Two hours max.',
+          note: {
+            ru: 'Полезные фразы:\n• «Запишу ваш телефон?» = Can I get your number?\n• «Вот флаер с информацией» = Here\'s a flyer with information\n• «Спасибо за поддержку!» = Thanks for your support!',
+            en: 'Useful phrases:\n• Can I get your number?\n• Here\'s a flyer with information\n• Thanks for your support!'
+          },
+          branches: [
+            { label: { ru: 'Записать контакт', en: 'Record contact' }, next: 'wrap' },
+            { label: { ru: 'Завершить разговор', en: 'End conversation' }, next: 'wrap' }
+          ]
+        },
+        undecided: {
+          ru: 'Зохран — член Ассамблеи штата Нью-Йорк. Единственный, кто говорит о реальном снижении цен. Что для вас сейчас самая большая проблема в городе?',
+          en: 'Zohran is a NY State Assembly member. The only one talking about really lowering costs. What\'s your biggest problem with the city right now?',
+          next: 'concerns',
+          buttonText: { ru: 'Ответить на вопросы', en: 'Answer questions' }
+        },
+        concerns: {
+          ru: 'ВАШИ ОТВЕТЫ НА ИХ ПРОБЛЕМЫ:\n\n«Как он это оплатит?»\n→ Налог на тех, у кого больше 100 миллионов долларов. Таких людей в городе всего несколько тысяч, но у них миллиарды.\n\n«Политики всегда обещают»\n→ Согласен! Но Зохран уже доказал — он провёл закон о защите от выселений во время ковида. Реально работает.\n\n«А что с безопасностью?»\n→ Когда у людей есть работа и жильё — улицы безопаснее. Плюс программы для подростков, чтобы не попадали в банды.\n\n«Мигранты забирают ресурсы»\n→ Зохран сам приехал из Уганды ребёнком. Он за то, чтобы люди быстрее получали разрешения на работу — работают, платят налоги, не сидят на пособиях.',
+          en: 'YOUR ANSWERS TO THEIR CONCERNS:\n\n"How will he pay for it?"\n→ Tax on those with over $100 million. Only a few thousand people in the city, but they have billions.\n\n"Politicians always promise"\n→ I agree! But Zohran already proved it - he passed the eviction protection law during COVID. Really works.\n\n"What about safety?"\n→ When people have jobs and housing - streets are safer. Plus programs for teenagers to stay out of gangs.\n\n"Migrants take resources"\n→ Zohran himself came from Uganda as a child. He wants people to get work permits faster - they work, pay taxes, don\'t sit on welfare.',
+          next: 'undecided_close',
+          buttonText: { ru: 'Завершить', en: 'Close' }
+        },
+        undecided_close: {
+          ru: 'Подумайте об этом. Вот информация. Главное — проголосуйте 4 ноября.',
+          en: 'Think about it. Here\'s information. Main thing - vote November 4th.',
+          next: 'wrap',
+          buttonText: { ru: 'Закончить', en: 'Finish' }
         },
         opposed: {
-          ru: 'Спасибо, что сказали. Хорошего дня!',
-          en: 'Thanks for sharing — have a good day!',
-          next: 'wrap_opposed',
-          buttonText: { ru: 'Завершить', en: 'Finish' }
-        },
-        plan: {
-          ru: '• Вы зарегистрированы?\n• Знаете адрес вашего участка?\n• Будете голосовать в день выборов, досрочно или по почте?',
-          en: 'Registered? Poll site address? Election Day, early, or by mail?',
-          note: { 
-            ru: 'Подсказка: даты/адреса читать с официальных страниц',
-            en: 'Tip: Read dates/addresses from official pages'
+          ru: 'Понятно. Главное — чтобы вы проголосовали. Хорошего дня!',
+          en: 'I understand. The important thing is that you vote. Have a good day!',
+          note: {
+            ru: '⚠️ НЕ СПОРЬТЕ. НЕ ТРАТЬТЕ ВРЕМЯ.',
+            en: '⚠️ DON\'T ARGUE. DON\'T WASTE TIME.'
           },
-          next: 'ask',
-          buttonText: { ru: 'Дальше', en: 'Next' }
-        },
-        ask: {
-          ru: 'Хотите присоединиться к нашей волонтёрской команде? Мы сообщим о ближайших выходах в Южном Бруклине.',
-          en: 'Would you like to join our volunteer team? We\'ll update you on the next canvass in South Brooklyn.',
-          branches: [
-            { label: { ru: 'Оставить контакты', en: 'Leave contacts' }, next: 'details' },
-            { label: { ru: 'Пропустить', en: 'Skip' }, next: 'wrap' }
-          ]
-        },
-        details: {
-          ru: 'Добавьте номер телефона и email во вкладке Details в MiniVAN (с согласия).',
-          en: 'Add phone and email under Details in MiniVAN (with consent).',
           next: 'wrap',
           buttonText: { ru: 'Завершить', en: 'Finish' }
         },
         wrap: {
-          ru: 'Спасибо!',
-          en: 'Thanks!',
-          next: 'intro',
-          buttonText: { ru: 'Начать заново', en: 'Start over' }
-        },
-        wrap_opposed: {
-          ru: 'Спасибо за время!',
-          en: 'Thanks for your time!',
-          next: 'intro',
-          buttonText: { ru: 'Начать заново', en: 'Start over' }
+          ru: 'Разговор завершён. Спасибо за вашу работу!',
+          en: 'Conversation complete. Thanks for your work!',
+          next: 'start',
+          buttonText: { ru: 'Начать новый разговор', en: 'Start new conversation' }
         }
       };
 
@@ -488,7 +494,7 @@ const CanvassingApp = () => {
           )}
           
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl sm:text-3xl font-bold text-zohran-blue">Canvassing Script</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-zohran-blue">Script</h2>
             
             {/* Language Toggle */}
             <div className="flex gap-2 bg-white rounded-lg shadow p-1">
@@ -575,7 +581,7 @@ const CanvassingApp = () => {
                 Step: <span className="font-bold text-zohran-blue">{scriptStep.toUpperCase()}</span>
               </span>
               <button
-                onClick={() => setScriptStep('intro')}
+                onClick={() => setScriptStep('start')}
                 className="text-sm text-zohran-orange hover:text-orange-700 font-medium"
               >
                 Reset Script
@@ -650,6 +656,56 @@ const CanvassingApp = () => {
                     )}
                   </button>
                 )}
+              </div>
+            </div>
+          </div>
+
+          {/* Cheat Sheet */}
+          <div className="bg-white p-4 sm:p-5 rounded-lg shadow-md border-l-4 border-zohran-orange">
+            <h3 className="font-bold text-base sm:text-lg mb-3 text-black">Шпаргалка / Cheat Sheet</h3>
+            <div className="space-y-3 text-sm">
+              <div className="bg-gray-50 p-3 rounded">
+                <p className="font-semibold text-black mb-1">Основное сообщение / Main message:</p>
+                <p className="text-gray-700 italic">"I'm volunteering for Zohran Mamdani for Mayor. He'll make buses free, freeze rent for stabilized tenants, and provide free childcare."</p>
+              </div>
+              <div className="bg-gray-50 p-3 rounded">
+                <p className="font-semibold text-black mb-1">Даты / Dates:</p>
+                <p className="text-gray-700">"Election Day is November 4th. Early voting: October 25 to November 2."</p>
+              </div>
+              <div className="bg-gray-50 p-3 rounded">
+                <p className="font-semibold text-black mb-1">Где голосовать / Where to vote:</p>
+                <p className="text-gray-700">"Check your poll site at zohranfornyc.com/pollsite"</p>
+              </div>
+              <div className="bg-gray-50 p-3 rounded">
+                <p className="font-semibold text-black mb-1">Регистрация / Registration:</p>
+                <p className="text-gray-700">"Register by October 25 at e-register.vote.nyc"</p>
+              </div>
+            </div>
+          </div>
+
+          {/* FAQ */}
+          <div className="bg-white p-4 sm:p-5 rounded-lg shadow-md border-l-4 border-zohran-red">
+            <h3 className="font-bold text-base sm:text-lg mb-3 text-black">Частые вопросы / FAQ</h3>
+            <div className="space-y-3 text-sm">
+              <div className="border-b border-gray-200 pb-3">
+                <p className="font-semibold text-black mb-1">В: «А русские за кого обычно голосуют?»</p>
+                <p className="text-gray-700">О: «За того, кто снизит цены и налоги. Зохран — единственный с конкретным планом.»</p>
+                <p className="text-gray-600 italic mt-1">For whoever lowers prices and taxes. Zohran is the only one with a concrete plan.</p>
+              </div>
+              <div className="border-b border-gray-200 pb-3">
+                <p className="font-semibold text-black mb-1">В: «Он демократ? Они же повышают налоги!»</p>
+                <p className="text-gray-700">О: «Он повысит налоги только миллиардерам. Если у вас нет 100 миллионов — вы сэкономите.»</p>
+                <p className="text-gray-600 italic mt-1">He'll only raise taxes on billionaires. If you don't have $100 million — you'll save.</p>
+              </div>
+              <div className="border-b border-gray-200 pb-3">
+                <p className="font-semibold text-black mb-1">В: «А что он думает про Израиль/Украину/etc?»</p>
+                <p className="text-gray-700">О: «Он мэр города, не президент. Его работа — снизить цены на метро и аренду, а не внешняя политика.»</p>
+                <p className="text-gray-600 italic mt-1">He's running for mayor, not president. His job is to lower subway and rent prices, not foreign policy.</p>
+              </div>
+              <div>
+                <p className="font-semibold text-black mb-1">В: «Почему вы это делаете бесплатно?»</p>
+                <p className="text-gray-700">О: «Потому что хочу жить в городе, где мои дети смогут себе позволить квартиру.»</p>
+                <p className="text-gray-600 italic mt-1">Because I want to live in a city where my kids can afford an apartment.</p>
               </div>
             </div>
           </div>
