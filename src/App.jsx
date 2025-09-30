@@ -349,7 +349,7 @@ const CanvassingApp = () => {
           </div>
 
           <div className="grid gap-4">
-            <div className="bg-white p-5 sm:p-6 rounded-lg shadow-md border-l-4 border-green-500">
+            <div className="bg-white p-5 sm:p-6 rounded-lg shadow-md border-l-4 border-zohran-blue">
               <h3 className="font-bold text-lg sm:text-xl mb-3 text-zohran-blue">Quick Facts / Быстрые факты</h3>
               <ul className="space-y-2 text-gray-700 text-base sm:text-lg">
                 <li>✓ 121,607 рýсскоговорящих / Russian speakers in Brooklyn</li>
@@ -409,8 +409,8 @@ const CanvassingApp = () => {
             </div>
           )}
           <h2 className="text-2xl sm:text-3xl font-bold text-zohran-blue mb-4">Persuasion Questions</h2>
-          <div className="bg-gradient-to-r from-green-50 to-green-100 p-5 sm:p-6 rounded-lg shadow-md border-l-4 border-green-500 mb-6">
-            <p className="text-green-700 text-sm sm:text-base">
+          <div className="bg-gradient-to-r from-blue-50 to-orange-50 p-5 sm:p-6 rounded-lg shadow-md border-l-4 border-zohran-blue mb-6">
+            <p className="text-zohran-blue text-sm sm:text-base">
               Questions to help voters see voting for Mamdani serves their interests, and that Trump's fear-mongering works against them.
             </p>
           </div>
@@ -428,9 +428,9 @@ const CanvassingApp = () => {
                   )}
                 </div>
                 {q.followup && (
-                  <div className="bg-green-50 p-3 sm:p-4 rounded border-l-4 border-green-400">
-                    <p className="text-green-900 font-medium text-sm sm:text-base">
-                      <span className="text-green-700">Follow-up:</span> {q.followup}
+                  <div className="bg-orange-50 p-3 sm:p-4 rounded border-l-4 border-zohran-orange">
+                    <p className="text-gray-900 font-medium text-sm sm:text-base">
+                      <span className="text-zohran-orange">Follow-up:</span> {q.followup}
                     </p>
                   </div>
                 )}
@@ -568,8 +568,8 @@ const CanvassingApp = () => {
             </p>
           </div>
 
-          <div className="bg-white p-5 sm:p-6 rounded-lg shadow-md border-l-4 border-green-500">
-            <h3 className="font-bold text-lg sm:text-xl text-green-700 mb-3">📊 Quick Stats</h3>
+          <div className="bg-white p-5 sm:p-6 rounded-lg shadow-md border-l-4 border-zohran-blue">
+            <h3 className="font-bold text-lg sm:text-xl text-zohran-blue mb-3">📊 Quick Stats</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm sm:text-base">
               <div className="bg-gray-50 p-3 sm:p-4 rounded">
                 <p className="font-semibold text-gray-800">Russian speakers:</p>
@@ -716,12 +716,12 @@ const CanvassingApp = () => {
             </div>
           </div>
 
-          <div className="bg-green-50 p-5 sm:p-6 rounded-lg shadow-md border-l-4 border-green-500">
-            <h3 className="font-bold text-lg sm:text-xl text-green-800 mb-3">🗳️ Actual Voting Results</h3>
+          <div className="bg-blue-50 p-5 sm:p-6 rounded-lg shadow-md border-l-4 border-zohran-blue">
+            <h3 className="font-bold text-lg sm:text-xl text-zohran-blue mb-3">🗳️ Actual Voting Results</h3>
             
             <div className="space-y-3 text-sm sm:text-base">
               <div className="bg-white p-3 sm:p-4 rounded">
-                <p className="font-semibold text-green-700 mb-2">Where Zohran WON:</p>
+                <p className="font-semibold text-zohran-blue mb-2">Where Zohran WON:</p>
                 <ul className="text-gray-700 space-y-1">
                   <li>• Brighton Beach (Muslim voters)</li>
                   <li>• Chinatown: +28 points</li>
@@ -743,8 +743,8 @@ const CanvassingApp = () => {
               </div>
             </div>
 
-            <div className="bg-green-100 p-3 sm:p-4 rounded mt-4">
-              <p className="text-green-900 font-medium text-sm sm:text-base">
+            <div className="bg-blue-100 p-3 sm:p-4 rounded mt-4">
+              <p className="text-zohran-blue font-medium text-sm sm:text-base">
                 📊 Overall: Zohran won primary by 12 points with coalition of working-class immigrants, South Asians, Muslims, progressive voters
               </p>
             </div>
