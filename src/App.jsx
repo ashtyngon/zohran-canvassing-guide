@@ -918,10 +918,17 @@ const CanvassingApp = () => {
       <div className="bg-zohran-blue text-white shadow-lg sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 py-4 sm:py-5">
           <div className="flex items-center justify-between">
-            <div>
+            <button
+              onClick={() => {
+                setActiveSection('home');
+                setSearchTerm('');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="text-left hover:opacity-80 transition-opacity"
+            >
               <h1 className="text-xl sm:text-2xl font-bold text-white">ZOHRAN</h1>
               <p className="text-white opacity-90 text-sm sm:text-base">for Brighton Beach</p>
-            </div>
+            </button>
             <button
               onClick={() => setMenuOpen(!menuOpen)}
               className="lg:hidden p-2 sm:p-3 hover:bg-blue-700 active:bg-blue-800 rounded-lg transition-colors touch-manipulation"
