@@ -771,7 +771,7 @@ const CanvassingApp = () => {
               </div>
               <div className="bg-gray-50 p-3 rounded">
                 <p className="font-semibold text-black mb-1">Где голосова́ть / Where to vote:</p>
-                <p className="text-gray-700">"Check your poll site at zohranfornyc.com/pollsite"</p>
+                <p className="text-gray-700">"Check your poll site at findmypollsite.vote.nyc"</p>
               </div>
               <div className="bg-gray-50 p-3 rounded">
                 <p className="font-semibold text-black mb-1">Регистра́ция / Registration:</p>
