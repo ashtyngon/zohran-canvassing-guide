@@ -401,85 +401,85 @@ const CanvassingApp = () => {
     if (activeSection === 'script') {
       const scriptNodes = {
         start: {
-          ru: 'Здравствуйте! [ИМЯ]? Я [ВАШЕ ИМЯ], живу здесь рядом на [улица/район]. Обхожу соседей перед выборами мэра — метро опять подорожало, аренда растёт каждый год. Вас это тоже достало?',
-          en: 'Hi! [NAME]? I\'m [YOUR NAME], I live nearby on [street]. I\'m talking to neighbors before the mayor election - subway prices went up again, rent keeps rising every year. Are you fed up with this too?',
+          ru: 'Здра́вствуйте! [И́МЯ]? Я [ВА́ШЕ И́МЯ], волонтёр кампа́нии Зохра́на Мамда́ни. Обхожу́ избира́телей пе́ред вы́борами мэ́ра — метро́ опя́ть подорожа́ло, аре́нда растёт ка́ждый год. Вас э́то то́же доста́ло?',
+          en: 'Hi! [NAME]? I\'m [YOUR NAME], volunteering for Zohran Mamdani. I\'m talking to voters before the mayor election - subway prices went up again, rent keeps rising every year. Are you fed up with this too?',
           note: {
-            ru: 'ИХ РЕАКЦИЯ = ВАШ КОМПАС\n• Соглашаются → продолжайте\n• Молчат/думают → дайте секунду, потом продолжайте\n• Злятся на всё → это ваш человек, работайте с этой энергией',
+            ru: 'ИХ РЕА́КЦИЯ = ВАШ КО́МПАС\n• Соглаша́ются → продолжа́йте\n• Молча́т/ду́мают → да́йте секу́нду, пото́м продолжа́йте\n• Зля́тся на всё → э́то ваш челове́к, рабо́тайте с э́той эне́ргией',
             en: 'THEIR REACTION = YOUR COMPASS\n• Agree → continue\n• Silent/thinking → give a second, then continue\n• Angry at everything → this is your person, work with that energy'
           },
           next: 'check',
-          buttonText: { ru: 'Дальше', en: 'Next' }
+          buttonText: { ru: 'Да́льше', en: 'Next' }
         },
         check: {
-          ru: 'Я поддерживаю Зохрана Мамдани — он обещает сделать автобусы бесплатными. Представляете, сколько семья сэкономит? Что вы об этом думаете?',
+          ru: 'Я поддéрживаю Зохра́на Мамда́ни — он обеща́ет сде́лать авто́бусы бесплáтными. Представля́ете, ско́лько семья́ сэконо́мит? Что вы об э́том ду́маете?',
           en: 'I support Zohran Mamdani - he promises to make buses free. Can you imagine how much a family would save? What do you think about this?',
           note: {
-            ru: 'По ответу сразу понятно:',
+            ru: 'По отве́ту сра́зу поня́тно:',
             en: 'The answer immediately shows:'
           },
           branches: [
-            { label: { ru: '👍 «Было бы здорово!»', en: '👍 "That would be great!"' }, next: 'supporter' },
-            { label: { ru: '🤷 «А кто это?» / «Как это возможно?»', en: '🤷 "Who is that?" / "How is that possible?"' }, next: 'undecided' },
-            { label: { ru: '👎 «Это нереально» / «Я за другого»', en: '👎 "That\'s unrealistic" / "I support someone else"' }, next: 'opposed' }
+            { label: { ru: '👍 «Бы́ло бы здо́рово!»', en: '👍 "That would be great!"' }, next: 'supporter' },
+            { label: { ru: '🤷 «А кто э́то?» / «Как э́то возмо́жно?»', en: '🤷 "Who?" / "How?"' }, next: 'undecided' },
+            { label: { ru: '👎 «Э́то нереа́льно» / «Я за друго́го»', en: '👎 "Unrealistic" / "I support someone else"' }, next: 'opposed' }
           ]
         },
         supporter: {
-          ru: 'Правда же! И это не пустые обещания — он уже провёл законы о защите арендаторов в Ассамблее штата. Вы будете голосовать 4 ноября?',
+          ru: 'Пра́вда же! И э́то не пусты́е обеща́ния — он уже́ провёл зако́ны о защи́те арендáторов в Ассамбле́е шта́та. Вы бу́дете голосова́ть 4 ноября́?',
           en: 'Right! And these aren\'t empty promises - he already passed tenant protection laws in the State Assembly. Will you vote November 4th?',
           next: 'supporter2',
-          buttonText: { ru: 'Да, буду голосовать', en: 'Yes, I\'ll vote' }
+          buttonText: { ru: 'Да, бу́ду голосова́ть', en: 'Yes, I\'ll vote' }
         },
         supporter2: {
-          ru: 'Отлично! Кстати, можно досрочно с 25 октября — очередей нет вообще. Знаете, где ваш участок?',
+          ru: 'Отли́чно! Кста́ти, мо́жно досро́чно с 25 октября́ — очереде́й нет вообще́. Зна́ете, где ваш уча́сток?',
           en: 'Great! By the way, you can vote early from October 25 - no lines at all. Do you know where your polling site is?',
           next: 'volunteer',
-          buttonText: { ru: 'Дальше', en: 'Next' }
+          buttonText: { ru: 'Да́льше', en: 'Next' }
         },
         volunteer: {
-          ru: 'Мы в субботу идём по району, рассказываем соседям. Хотите с нами? Два часа максимум.',
+          ru: 'Мы в суббо́ту идём по райо́ну, расска́зываем сосе́дям. Хоти́те с на́ми? Два часа́ ма́ксимум.',
           en: 'We\'re walking the neighborhood Saturday, talking to neighbors. Want to join? Two hours max.',
           note: {
-            ru: 'Полезные фразы:\n• «Запишу ваш телефон?» = Can I get your number?\n• «Вот флаер с информацией» = Here\'s a flyer with information\n• «Спасибо за поддержку!» = Thanks for your support!',
+            ru: 'Поле́зные фра́зы:\n• «Запишу́ ваш телефо́н?» = Can I get your number?\n• «Вот фла́ер с информа́цией» = Here\'s a flyer with information\n• «Спаси́бо за подде́ржку!» = Thanks for your support!',
             en: 'Useful phrases:\n• Can I get your number?\n• Here\'s a flyer with information\n• Thanks for your support!'
           },
           branches: [
-            { label: { ru: 'Записать контакт', en: 'Record contact' }, next: 'wrap' },
-            { label: { ru: 'Завершить разговор', en: 'End conversation' }, next: 'wrap' }
+            { label: { ru: 'Записа́ть конта́кт', en: 'Record contact' }, next: 'wrap' },
+            { label: { ru: 'Заверши́ть разгово́р', en: 'End conversation' }, next: 'wrap' }
           ]
         },
         undecided: {
-          ru: 'Зохран — член Ассамблеи штата Нью-Йорк. Единственный, кто говорит о реальном снижении цен. Что для вас сейчас самая большая проблема в городе?',
+          ru: 'Зохра́н — член Ассамбле́и шта́та Нью-Йо́рк. Еди́нственный, кто говори́т о реа́льном сниже́нии цен. Что для вас сейча́с са́мая больша́я пробле́ма в го́роде?',
           en: 'Zohran is a NY State Assembly member. The only one talking about really lowering costs. What\'s your biggest problem with the city right now?',
           next: 'concerns',
-          buttonText: { ru: 'Ответить на вопросы', en: 'Answer questions' }
+          buttonText: { ru: 'Отве́тить на вопро́сы', en: 'Answer questions' }
         },
         concerns: {
-          ru: 'ВАШИ ОТВЕТЫ НА ИХ ПРОБЛЕМЫ:\n\n«Как он это оплатит?»\n→ Налог на тех, у кого больше 100 миллионов долларов. Таких людей в городе всего несколько тысяч, но у них миллиарды.\n\n«Политики всегда обещают»\n→ Согласен! Но Зохран уже доказал — он провёл закон о защите от выселений во время ковида. Реально работает.\n\n«А что с безопасностью?»\n→ Когда у людей есть работа и жильё — улицы безопаснее. Плюс программы для подростков, чтобы не попадали в банды.\n\n«Мигранты забирают ресурсы»\n→ Зохран сам приехал из Уганды ребёнком. Он за то, чтобы люди быстрее получали разрешения на работу — работают, платят налоги, не сидят на пособиях.',
+          ru: 'ВА́ШИ ОТВЕ́ТЫ НА ИХ ПРОБЛЕ́МЫ:\n\n«Как он э́то опла́тит?»\n→ Нало́г на тех, у кого́ бо́льше 100 миллио́нов до́лларов. Таки́х люде́й в го́роде всего́ не́сколько ты́сяч, но у них миллиа́рды.\n\n«Поли́тики всегда́ обеща́ют»\n→ Согла́сен! Но Зохра́н уже́ доказа́л — он провёл зако́н о защи́те от выселе́ний во вре́мя кови́да. Реа́льно рабо́тает.\n\n«А что с безопа́сностью?»\n→ Когда́ у люде́й есть рабо́та и жильё — у́лицы безопа́снее. Плюс програ́ммы для подро́стков, что́бы не попада́ли в ба́нды.\n\n«Мигра́нты забира́ют ресу́рсы»\n→ Зохра́н сам прие́хал из Уга́нды ребёнком. Он за то, что́бы лю́ди быстре́е получа́ли разреше́ния на рабо́ту — рабо́тают, пла́тят нало́ги, не сидя́т на посо́биях.',
           en: 'YOUR ANSWERS TO THEIR CONCERNS:\n\n"How will he pay for it?"\n→ Tax on those with over $100 million. Only a few thousand people in the city, but they have billions.\n\n"Politicians always promise"\n→ I agree! But Zohran already proved it - he passed the eviction protection law during COVID. Really works.\n\n"What about safety?"\n→ When people have jobs and housing - streets are safer. Plus programs for teenagers to stay out of gangs.\n\n"Migrants take resources"\n→ Zohran himself came from Uganda as a child. He wants people to get work permits faster - they work, pay taxes, don\'t sit on welfare.',
           next: 'undecided_close',
-          buttonText: { ru: 'Завершить', en: 'Close' }
+          buttonText: { ru: 'Заверши́ть', en: 'Close' }
         },
         undecided_close: {
-          ru: 'Подумайте об этом. Вот информация. Главное — проголосуйте 4 ноября.',
+          ru: 'Поду́майте об э́том. Вот информа́ция. Гла́вное — проголосу́йте 4 ноября́.',
           en: 'Think about it. Here\'s information. Main thing - vote November 4th.',
           next: 'wrap',
-          buttonText: { ru: 'Закончить', en: 'Finish' }
+          buttonText: { ru: 'Зако́нчить', en: 'Finish' }
         },
         opposed: {
-          ru: 'Понятно. Главное — чтобы вы проголосовали. Хорошего дня!',
+          ru: 'Поня́тно. Гла́вное — что́бы вы проголосова́ли. Хоро́шего дня!',
           en: 'I understand. The important thing is that you vote. Have a good day!',
           note: {
-            ru: '⚠️ НЕ СПОРЬТЕ. НЕ ТРАТЬТЕ ВРЕМЯ.',
+            ru: '⚠️ НЕ СПО́РЬТЕ. НЕ ТРА́ТЬТЕ ВРЕ́МЯ.',
             en: '⚠️ DON\'T ARGUE. DON\'T WASTE TIME.'
           },
           next: 'wrap',
-          buttonText: { ru: 'Завершить', en: 'Finish' }
+          buttonText: { ru: 'Заверши́ть', en: 'Finish' }
         },
         wrap: {
-          ru: 'Разговор завершён. Спасибо за вашу работу!',
+          ru: 'Разгово́р завершён. Спаси́бо за ва́шу рабо́ту!',
           en: 'Conversation complete. Thanks for your work!',
           next: 'start',
-          buttonText: { ru: 'Начать новый разговор', en: 'Start new conversation' }
+          buttonText: { ru: 'Нача́ть но́вый разгово́р', en: 'Start new conversation' }
         }
       };
 
@@ -533,7 +533,7 @@ const CanvassingApp = () => {
 
           {/* Official Resources */}
           <div className="bg-white p-4 sm:p-5 rounded-lg shadow-md border-l-4 border-zohran-orange">
-            <h3 className="font-bold text-base sm:text-lg mb-3 text-black">Official NYC Voting Resources / Официальные ресурсы</h3>
+            <h3 className="font-bold text-base sm:text-lg mb-3 text-black">Official NYC Voting Resources / Официа́льные ресу́рсы</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <a
                 href="https://vote.nyc"
@@ -543,7 +543,7 @@ const CanvassingApp = () => {
               >
                 <div className="text-left">
                   <div className="text-zohran-blue">vote.nyc</div>
-                  <div className="text-xs text-gray-600">Информация о выборах</div>
+                  <div className="text-xs text-gray-600">Информа́ция о вы́борах</div>
                 </div>
                 <ExternalLink size={14} className="text-gray-400 group-hover:text-zohran-blue" />
               </a>
@@ -554,8 +554,8 @@ const CanvassingApp = () => {
                 className="flex items-center justify-between gap-2 px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded text-sm font-medium transition-colors group"
               >
                 <div className="text-left">
-                  <div className="text-zohran-blue">Register / Регистрация</div>
-                  <div className="text-xs text-gray-600">До 25 октября</div>
+                  <div className="text-zohran-blue">Register / Регистра́ция</div>
+                  <div className="text-xs text-gray-600">До 25 октября́</div>
                 </div>
                 <ExternalLink size={14} className="text-gray-400 group-hover:text-zohran-blue" />
               </a>
@@ -566,8 +566,8 @@ const CanvassingApp = () => {
                 className="flex items-center justify-between gap-2 px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded text-sm font-medium transition-colors group"
               >
                 <div className="text-left">
-                  <div className="text-zohran-blue">Absentee / Заочное</div>
-                  <div className="text-xs text-gray-600">Голосование по почте</div>
+                  <div className="text-zohran-blue">Absentee / Зао́чное</div>
+                  <div className="text-xs text-gray-600">Голосова́ние по по́чте</div>
                 </div>
                 <ExternalLink size={14} className="text-gray-400 group-hover:text-zohran-blue" />
               </a>
@@ -578,7 +578,7 @@ const CanvassingApp = () => {
                 className="flex items-center justify-between gap-2 px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded text-sm font-medium transition-colors group"
               >
                 <div className="text-left">
-                  <div className="text-zohran-blue">Early Mail / Досрочно</div>
+                  <div className="text-zohran-blue">Early Mail / Досро́чно</div>
                   <div className="text-xs text-gray-600">25 окт - 2 нояб</div>
                 </div>
                 <ExternalLink size={14} className="text-gray-400 group-hover:text-zohran-blue" />
@@ -586,7 +586,7 @@ const CanvassingApp = () => {
             </div>
             
             <div className="mt-4 pt-4 border-t border-gray-200">
-              <p className="text-xs font-semibold text-gray-700 mb-2">Материалы на русском / Russian Materials:</p>
+              <p className="text-xs font-semibold text-gray-700 mb-2">Материа́лы на ру́сском / Russian Materials:</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <a
                   href="https://www.elections.ny.gov/NYSBOE/download/voting/voteformrussian.pdf"
@@ -595,7 +595,7 @@ const CanvassingApp = () => {
                   className="flex items-center justify-between gap-2 px-3 py-2 bg-blue-50 hover:bg-blue-100 rounded text-sm transition-colors group"
                 >
                   <div className="text-left">
-                    <div className="text-zohran-blue font-medium">📄 Форма регистрации (PDF)</div>
+                    <div className="text-zohran-blue font-medium">📄 Фо́рма регистра́ции (PDF)</div>
                     <div className="text-xs text-gray-600">Registration form in Russian</div>
                   </div>
                   <ExternalLink size={14} className="text-gray-400 group-hover:text-zohran-blue" />
@@ -607,7 +607,7 @@ const CanvassingApp = () => {
                   className="flex items-center justify-between gap-2 px-3 py-2 bg-blue-50 hover:bg-blue-100 rounded text-sm transition-colors group"
                 >
                   <div className="text-left">
-                    <div className="text-zohran-blue font-medium">📅 Даты выборов 2024</div>
+                    <div className="text-zohran-blue font-medium">📅 Да́ты вы́боров 2024</div>
                     <div className="text-xs text-gray-600">Election dates & info</div>
                   </div>
                   <ExternalLink size={14} className="text-gray-400 group-hover:text-zohran-blue" />
@@ -619,7 +619,7 @@ const CanvassingApp = () => {
                   className="flex items-center justify-between gap-2 px-3 py-2 bg-blue-50 hover:bg-blue-100 rounded text-sm transition-colors group"
                 >
                   <div className="text-left">
-                    <div className="text-zohran-blue font-medium">📍 Найти участок</div>
+                    <div className="text-zohran-blue font-medium">📍 Найти́ уча́сток</div>
                     <div className="text-xs text-gray-600">Find your poll site</div>
                   </div>
                   <ExternalLink size={14} className="text-gray-400 group-hover:text-zohran-blue" />
@@ -632,7 +632,7 @@ const CanvassingApp = () => {
                 >
                   <div className="text-left">
                     <div className="text-zohran-blue font-medium">📖 Voter Guide</div>
-                    <div className="text-xs text-gray-600">Гид избирателя</div>
+                    <div className="text-xs text-gray-600">Гид избира́теля</div>
                   </div>
                   <ExternalLink size={14} className="text-gray-400 group-hover:text-zohran-blue" />
                 </a>
@@ -640,11 +640,11 @@ const CanvassingApp = () => {
             </div>
             
             <div className="mt-3 p-3 bg-yellow-50 rounded text-xs text-gray-700">
-              <p className="font-semibold mb-1">⚠️ Важные даты / Important Dates:</p>
+              <p className="font-semibold mb-1">⚠️ Ва́жные да́ты / Important Dates:</p>
               <ul className="space-y-0.5">
-                <li>• Регистрация / Registration deadline: <span className="font-bold">Oct 25</span></li>
-                <li>• Досрочное голосование / Early voting: <span className="font-bold">Oct 25 - Nov 2</span></li>
-                <li>• День выборов / Election Day: <span className="font-bold">Nov 4, 6am-9pm</span></li>
+                <li>• Регистра́ция / Registration deadline: <span className="font-bold">Oct 25</span></li>
+                <li>• Досро́чное голосова́ние / Early voting: <span className="font-bold">Oct 25 - Nov 2</span></li>
+                <li>• День вы́боров / Election Day: <span className="font-bold">Nov 4, 6am-9pm</span></li>
               </ul>
             </div>
           </div>
@@ -667,28 +667,50 @@ const CanvassingApp = () => {
           {/* Main Script Content */}
           <div className="bg-white p-5 sm:p-6 rounded-lg shadow-lg border-2 border-zohran-blue">
             <div className="space-y-4">
-              {/* Russian Text */}
-              {(scriptLanguage === 'ru' || scriptLanguage === 'both') && (
+              {/* Combined Russian and English Text */}
+              {scriptLanguage === 'both' && (
+                <div className="bg-gray-50 p-4 sm:p-5 rounded-lg">
+                  <p className="text-black text-lg sm:text-xl leading-relaxed whitespace-pre-line">
+                    {currentNode.ru}
+                  </p>
+                  <p className="text-gray-600 text-sm sm:text-base italic mt-2 leading-relaxed whitespace-pre-line">
+                    {currentNode.en}
+                  </p>
+                  {currentNode.note?.ru && (
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      <p className="text-gray-700 text-sm whitespace-pre-line">
+                        {currentNode.note.ru}
+                      </p>
+                      <p className="text-gray-500 text-xs italic mt-1 whitespace-pre-line">
+                        {currentNode.note.en}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Russian Only */}
+              {scriptLanguage === 'ru' && (
                 <div className="bg-gray-50 p-4 sm:p-5 rounded-lg">
                   <p className="text-black text-lg sm:text-xl leading-relaxed whitespace-pre-line">
                     {currentNode.ru}
                   </p>
                   {currentNode.note?.ru && (
-                    <p className="text-gray-600 text-sm mt-3 italic">
+                    <p className="text-gray-600 text-sm mt-3 italic whitespace-pre-line">
                       {currentNode.note.ru}
                     </p>
                   )}
                 </div>
               )}
 
-              {/* English Text */}
-              {(scriptLanguage === 'en' || scriptLanguage === 'both') && (
-                <div className={`p-4 sm:p-5 rounded-lg ${scriptLanguage === 'both' ? 'bg-white border border-gray-300' : 'bg-gray-50'}`}>
-                  <p className={`text-black leading-relaxed whitespace-pre-line ${scriptLanguage === 'both' ? 'text-sm sm:text-base italic' : 'text-lg sm:text-xl'}`}>
+              {/* English Only */}
+              {scriptLanguage === 'en' && (
+                <div className="bg-gray-50 p-4 sm:p-5 rounded-lg">
+                  <p className="text-black text-lg sm:text-xl leading-relaxed whitespace-pre-line">
                     {currentNode.en}
                   </p>
                   {currentNode.note?.en && (
-                    <p className="text-gray-600 text-sm mt-3 italic">
+                    <p className="text-gray-600 text-sm mt-3 italic whitespace-pre-line">
                       {currentNode.note.en}
                     </p>
                   )}
@@ -737,22 +759,22 @@ const CanvassingApp = () => {
 
           {/* Cheat Sheet */}
           <div className="bg-white p-4 sm:p-5 rounded-lg shadow-md border-l-4 border-zohran-orange">
-            <h3 className="font-bold text-base sm:text-lg mb-3 text-black">Шпаргалка / Cheat Sheet</h3>
+            <h3 className="font-bold text-base sm:text-lg mb-3 text-black">Шпарга́лка / Cheat Sheet</h3>
             <div className="space-y-3 text-sm">
               <div className="bg-gray-50 p-3 rounded">
-                <p className="font-semibold text-black mb-1">Основное сообщение / Main message:</p>
+                <p className="font-semibold text-black mb-1">Основно́е сообще́ние / Main message:</p>
                 <p className="text-gray-700 italic">"I'm volunteering for Zohran Mamdani for Mayor. He'll make buses free, freeze rent for stabilized tenants, and provide free childcare."</p>
               </div>
               <div className="bg-gray-50 p-3 rounded">
-                <p className="font-semibold text-black mb-1">Даты / Dates:</p>
+                <p className="font-semibold text-black mb-1">Да́ты / Dates:</p>
                 <p className="text-gray-700">"Election Day is November 4th. Early voting: October 25 to November 2."</p>
               </div>
               <div className="bg-gray-50 p-3 rounded">
-                <p className="font-semibold text-black mb-1">Где голосовать / Where to vote:</p>
+                <p className="font-semibold text-black mb-1">Где голосова́ть / Where to vote:</p>
                 <p className="text-gray-700">"Check your poll site at zohranfornyc.com/pollsite"</p>
               </div>
               <div className="bg-gray-50 p-3 rounded">
-                <p className="font-semibold text-black mb-1">Регистрация / Registration:</p>
+                <p className="font-semibold text-black mb-1">Регистра́ция / Registration:</p>
                 <p className="text-gray-700">"Register by October 25 at e-register.vote.nyc"</p>
               </div>
             </div>
@@ -760,54 +782,38 @@ const CanvassingApp = () => {
 
           {/* FAQ */}
           <div className="bg-white p-4 sm:p-5 rounded-lg shadow-md border-l-4 border-zohran-red">
-            <h3 className="font-bold text-base sm:text-lg mb-3 text-black">Частые вопросы / Frequently Asked Questions</h3>
+            <h3 className="font-bold text-base sm:text-lg mb-3 text-black">Ча́стые вопро́сы / Frequently Asked Questions</h3>
             <div className="space-y-3 text-sm">
               <div className="border-b border-gray-200 pb-3">
-                <div className="space-y-2">
-                  <div>
-                    <p className="font-semibold text-black">В: «А русские за кого обычно голосуют?»</p>
-                    <p className="text-gray-700">О: «За того, кто снизит цены и налоги. Зохран — единственный с конкретным планом.»</p>
-                  </div>
-                  <div className="mt-2 pt-2 border-t border-gray-100">
-                    <p className="font-semibold text-gray-600">Q: "Who do Russians usually vote for?"</p>
-                    <p className="text-gray-600">A: "For whoever lowers prices and taxes. Zohran is the only one with a concrete plan."</p>
-                  </div>
+                <div className="space-y-1">
+                  <p className="font-semibold text-black">В: «А ру́сские за кого́ обы́чно голосу́ют?»</p>
+                  <p className="text-gray-600 text-xs italic">Q: "Who do Russians usually vote for?"</p>
+                  <p className="text-gray-700 mt-2">О: «За того́, кто сни́зит це́ны и нало́ги. Зохра́н — еди́нственный с конкре́тным пла́ном.»</p>
+                  <p className="text-gray-500 text-xs italic">A: "For whoever lowers prices and taxes. Zohran is the only one with a concrete plan."</p>
                 </div>
               </div>
               <div className="border-b border-gray-200 pb-3">
-                <div className="space-y-2">
-                  <div>
-                    <p className="font-semibold text-black">В: «Он демократ? Они же повышают налоги!»</p>
-                    <p className="text-gray-700">О: «Он повысит налоги только миллиардерам. Если у вас нет 100 миллионов — вы сэкономите.»</p>
-                  </div>
-                  <div className="mt-2 pt-2 border-t border-gray-100">
-                    <p className="font-semibold text-gray-600">Q: "He's a Democrat? They raise taxes!"</p>
-                    <p className="text-gray-600">A: "He'll only raise taxes on billionaires. If you don't have $100 million — you'll save."</p>
-                  </div>
+                <div className="space-y-1">
+                  <p className="font-semibold text-black">В: «Он демокра́т? Они́ же повыша́ют нало́ги!»</p>
+                  <p className="text-gray-600 text-xs italic">Q: "He's a Democrat? They raise taxes!"</p>
+                  <p className="text-gray-700 mt-2">О: «Он повы́сит нало́ги то́лько миллиардéрам. Е́сли у вас нет 100 миллио́нов — вы сэконо́мите.»</p>
+                  <p className="text-gray-500 text-xs italic">A: "He'll only raise taxes on billionaires. If you don't have $100 million — you'll save."</p>
                 </div>
               </div>
               <div className="border-b border-gray-200 pb-3">
-                <div className="space-y-2">
-                  <div>
-                    <p className="font-semibold text-black">В: «А что он думает про Израиль/Украину/etc?»</p>
-                    <p className="text-gray-700">О: «Он мэр города, не президент. Его работа — снизить цены на метро и аренду, а не внешняя политика.»</p>
-                  </div>
-                  <div className="mt-2 pt-2 border-t border-gray-100">
-                    <p className="font-semibold text-gray-600">Q: "What does he think about Israel/Ukraine/etc?"</p>
-                    <p className="text-gray-600">A: "He's running for mayor, not president. His job is to lower subway and rent prices, not foreign policy."</p>
-                  </div>
+                <div className="space-y-1">
+                  <p className="font-semibold text-black">В: «А что он ду́мает про Изра́иль/Украи́ну/etc?»</p>
+                  <p className="text-gray-600 text-xs italic">Q: "What does he think about Israel/Ukraine/etc?"</p>
+                  <p className="text-gray-700 mt-2">О: «Он мэр го́рода, не президе́нт. Его́ рабо́та — сни́зить це́ны на метро́ и аре́нду, а не вне́шняя поли́тика.»</p>
+                  <p className="text-gray-500 text-xs italic">A: "He's running for mayor, not president. His job is to lower subway and rent prices, not foreign policy."</p>
                 </div>
               </div>
               <div>
-                <div className="space-y-2">
-                  <div>
-                    <p className="font-semibold text-black">В: «Почему вы это делаете бесплатно?»</p>
-                    <p className="text-gray-700">О: «Потому что хочу жить в городе, где мои дети смогут себе позволить квартиру.»</p>
-                  </div>
-                  <div className="mt-2 pt-2 border-t border-gray-100">
-                    <p className="font-semibold text-gray-600">Q: "Why are you doing this for free?"</p>
-                    <p className="text-gray-600">A: "Because I want to live in a city where my kids can afford an apartment."</p>
-                  </div>
+                <div className="space-y-1">
+                  <p className="font-semibold text-black">В: «Почему́ вы э́то де́лаете беспла́тно?»</p>
+                  <p className="text-gray-600 text-xs italic">Q: "Why are you doing this for free?"</p>
+                  <p className="text-gray-700 mt-2">О: «Потому́ что хочу́ жить в го́роде, где мои́ де́ти смо́гут себе́ позво́лить кварти́ру.»</p>
+                  <p className="text-gray-500 text-xs italic">A: "Because I want to live in a city where my kids can afford an apartment."</p>
                 </div>
               </div>
             </div>
@@ -815,7 +821,7 @@ const CanvassingApp = () => {
 
           {/* Instructions */}
           <div className="bg-white p-4 sm:p-5 rounded-lg shadow-md border-l-4 border-gray-400">
-            <h3 className="font-bold text-base sm:text-lg mb-2 text-gray-700">How to Use This Script</h3>
+            <h3 className="font-bold text-base sm:text-lg mb-2 text-gray-700">Как испо́льзовать / How to Use This Script</h3>
             <ul className="space-y-1 text-sm text-gray-600">
               <li>• Follow the prompts step by step</li>
               <li>• Choose the appropriate response based on voter reaction</li>
