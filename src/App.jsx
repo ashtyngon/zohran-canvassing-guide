@@ -601,13 +601,13 @@ const CanvassingApp = () => {
                   <ExternalLink size={14} className="text-gray-400 group-hover:text-zohran-blue" />
                 </a>
                 <a
-                  href="https://www.elections.ny.gov/NYSBOE/elections/2024/2024Elections.html"
+                  href="https://www.vote.nyc/elections"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-between gap-2 px-3 py-2 bg-blue-50 hover:bg-blue-100 rounded text-sm transition-colors group"
                 >
                   <div className="text-left">
-                    <div className="text-zohran-blue font-medium">📅 Да́ты вы́боров 2024</div>
+                    <div className="text-zohran-blue font-medium">📅 Да́ты вы́боров</div>
                     <div className="text-xs text-gray-600">Election dates & info</div>
                   </div>
                   <ExternalLink size={14} className="text-gray-400 group-hover:text-zohran-blue" />
