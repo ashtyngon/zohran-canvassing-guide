@@ -215,7 +215,7 @@ const CanvassingApp = () => {
       return (
         <div className="space-y-4 sm:space-y-6">
           <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-5 sm:p-6 rounded-xl shadow-lg">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-3">Volunteer Canvassing Guide</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-3">Russian-language Volunteer Canvassing Guide</h2>
             <p className="text-purple-100 leading-relaxed text-base sm:text-lg">
               Russian-speaking Brooklyn voters for Zohran Mamdani's campaign
             </p>
