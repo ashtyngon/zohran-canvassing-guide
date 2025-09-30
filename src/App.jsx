@@ -533,44 +533,119 @@ const CanvassingApp = () => {
 
           {/* Official Resources */}
           <div className="bg-white p-4 sm:p-5 rounded-lg shadow-md border-l-4 border-zohran-orange">
-            <h3 className="font-bold text-base sm:text-lg mb-3 text-black">Official NYC Voting Resources</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <h3 className="font-bold text-base sm:text-lg mb-3 text-black">Official NYC Voting Resources / Официальные ресурсы</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <a
                 href="https://vote.nyc"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-1 px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded text-sm text-zohran-blue font-medium transition-colors"
+                className="flex items-center justify-between gap-2 px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded text-sm font-medium transition-colors group"
               >
-                vote.nyc
-                <ExternalLink size={14} />
+                <div className="text-left">
+                  <div className="text-zohran-blue">vote.nyc</div>
+                  <div className="text-xs text-gray-600">Информация о выборах</div>
+                </div>
+                <ExternalLink size={14} className="text-gray-400 group-hover:text-zohran-blue" />
               </a>
               <a
                 href="https://e-register.vote.nyc/registration"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-1 px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded text-sm text-zohran-blue font-medium transition-colors"
+                className="flex items-center justify-between gap-2 px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded text-sm font-medium transition-colors group"
               >
-                Register
-                <ExternalLink size={14} />
+                <div className="text-left">
+                  <div className="text-zohran-blue">Register / Регистрация</div>
+                  <div className="text-xs text-gray-600">До 25 октября</div>
+                </div>
+                <ExternalLink size={14} className="text-gray-400 group-hover:text-zohran-blue" />
               </a>
               <a
                 href="https://requestballot.vote.nyc/absentee"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-1 px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded text-sm text-zohran-blue font-medium transition-colors"
+                className="flex items-center justify-between gap-2 px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded text-sm font-medium transition-colors group"
               >
-                Absentee
-                <ExternalLink size={14} />
+                <div className="text-left">
+                  <div className="text-zohran-blue">Absentee / Заочное</div>
+                  <div className="text-xs text-gray-600">Голосование по почте</div>
+                </div>
+                <ExternalLink size={14} className="text-gray-400 group-hover:text-zohran-blue" />
               </a>
               <a
                 href="https://requestballot.vote.nyc/earlymail"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-1 px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded text-sm text-zohran-blue font-medium transition-colors"
+                className="flex items-center justify-between gap-2 px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded text-sm font-medium transition-colors group"
               >
-                Early Mail
-                <ExternalLink size={14} />
+                <div className="text-left">
+                  <div className="text-zohran-blue">Early Mail / Досрочно</div>
+                  <div className="text-xs text-gray-600">25 окт - 2 нояб</div>
+                </div>
+                <ExternalLink size={14} className="text-gray-400 group-hover:text-zohran-blue" />
               </a>
+            </div>
+            
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <p className="text-xs font-semibold text-gray-700 mb-2">Материалы на русском / Russian Materials:</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <a
+                  href="https://www.elections.ny.gov/NYSBOE/download/voting/voteformrussian.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between gap-2 px-3 py-2 bg-blue-50 hover:bg-blue-100 rounded text-sm transition-colors group"
+                >
+                  <div className="text-left">
+                    <div className="text-zohran-blue font-medium">📄 Форма регистрации (PDF)</div>
+                    <div className="text-xs text-gray-600">Registration form in Russian</div>
+                  </div>
+                  <ExternalLink size={14} className="text-gray-400 group-hover:text-zohran-blue" />
+                </a>
+                <a
+                  href="https://www.elections.ny.gov/NYSBOE/elections/2024/2024Elections.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between gap-2 px-3 py-2 bg-blue-50 hover:bg-blue-100 rounded text-sm transition-colors group"
+                >
+                  <div className="text-left">
+                    <div className="text-zohran-blue font-medium">📅 Даты выборов 2024</div>
+                    <div className="text-xs text-gray-600">Election dates & info</div>
+                  </div>
+                  <ExternalLink size={14} className="text-gray-400 group-hover:text-zohran-blue" />
+                </a>
+                <a
+                  href="https://findmypollsite.vote.nyc"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between gap-2 px-3 py-2 bg-blue-50 hover:bg-blue-100 rounded text-sm transition-colors group"
+                >
+                  <div className="text-left">
+                    <div className="text-zohran-blue font-medium">📍 Найти участок</div>
+                    <div className="text-xs text-gray-600">Find your poll site</div>
+                  </div>
+                  <ExternalLink size={14} className="text-gray-400 group-hover:text-zohran-blue" />
+                </a>
+                <a
+                  href="https://vote.nyc/page/voter-guide"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between gap-2 px-3 py-2 bg-blue-50 hover:bg-blue-100 rounded text-sm transition-colors group"
+                >
+                  <div className="text-left">
+                    <div className="text-zohran-blue font-medium">📖 Voter Guide</div>
+                    <div className="text-xs text-gray-600">Гид избирателя</div>
+                  </div>
+                  <ExternalLink size={14} className="text-gray-400 group-hover:text-zohran-blue" />
+                </a>
+              </div>
+            </div>
+            
+            <div className="mt-3 p-3 bg-yellow-50 rounded text-xs text-gray-700">
+              <p className="font-semibold mb-1">⚠️ Важные даты / Important Dates:</p>
+              <ul className="space-y-0.5">
+                <li>• Регистрация / Registration deadline: <span className="font-bold">Oct 25</span></li>
+                <li>• Досрочное голосование / Early voting: <span className="font-bold">Oct 25 - Nov 2</span></li>
+                <li>• День выборов / Election Day: <span className="font-bold">Nov 4, 6am-9pm</span></li>
+              </ul>
             </div>
           </div>
 
@@ -685,27 +760,55 @@ const CanvassingApp = () => {
 
           {/* FAQ */}
           <div className="bg-white p-4 sm:p-5 rounded-lg shadow-md border-l-4 border-zohran-red">
-            <h3 className="font-bold text-base sm:text-lg mb-3 text-black">Частые вопросы / FAQ</h3>
+            <h3 className="font-bold text-base sm:text-lg mb-3 text-black">Частые вопросы / Frequently Asked Questions</h3>
             <div className="space-y-3 text-sm">
               <div className="border-b border-gray-200 pb-3">
-                <p className="font-semibold text-black mb-1">В: «А русские за кого обычно голосуют?»</p>
-                <p className="text-gray-700">О: «За того, кто снизит цены и налоги. Зохран — единственный с конкретным планом.»</p>
-                <p className="text-gray-600 italic mt-1">For whoever lowers prices and taxes. Zohran is the only one with a concrete plan.</p>
+                <div className="space-y-2">
+                  <div>
+                    <p className="font-semibold text-black">В: «А русские за кого обычно голосуют?»</p>
+                    <p className="text-gray-700">О: «За того, кто снизит цены и налоги. Зохран — единственный с конкретным планом.»</p>
+                  </div>
+                  <div className="mt-2 pt-2 border-t border-gray-100">
+                    <p className="font-semibold text-gray-600">Q: "Who do Russians usually vote for?"</p>
+                    <p className="text-gray-600">A: "For whoever lowers prices and taxes. Zohran is the only one with a concrete plan."</p>
+                  </div>
+                </div>
               </div>
               <div className="border-b border-gray-200 pb-3">
-                <p className="font-semibold text-black mb-1">В: «Он демократ? Они же повышают налоги!»</p>
-                <p className="text-gray-700">О: «Он повысит налоги только миллиардерам. Если у вас нет 100 миллионов — вы сэкономите.»</p>
-                <p className="text-gray-600 italic mt-1">He'll only raise taxes on billionaires. If you don't have $100 million — you'll save.</p>
+                <div className="space-y-2">
+                  <div>
+                    <p className="font-semibold text-black">В: «Он демократ? Они же повышают налоги!»</p>
+                    <p className="text-gray-700">О: «Он повысит налоги только миллиардерам. Если у вас нет 100 миллионов — вы сэкономите.»</p>
+                  </div>
+                  <div className="mt-2 pt-2 border-t border-gray-100">
+                    <p className="font-semibold text-gray-600">Q: "He's a Democrat? They raise taxes!"</p>
+                    <p className="text-gray-600">A: "He'll only raise taxes on billionaires. If you don't have $100 million — you'll save."</p>
+                  </div>
+                </div>
               </div>
               <div className="border-b border-gray-200 pb-3">
-                <p className="font-semibold text-black mb-1">В: «А что он думает про Израиль/Украину/etc?»</p>
-                <p className="text-gray-700">О: «Он мэр города, не президент. Его работа — снизить цены на метро и аренду, а не внешняя политика.»</p>
-                <p className="text-gray-600 italic mt-1">He's running for mayor, not president. His job is to lower subway and rent prices, not foreign policy.</p>
+                <div className="space-y-2">
+                  <div>
+                    <p className="font-semibold text-black">В: «А что он думает про Израиль/Украину/etc?»</p>
+                    <p className="text-gray-700">О: «Он мэр города, не президент. Его работа — снизить цены на метро и аренду, а не внешняя политика.»</p>
+                  </div>
+                  <div className="mt-2 pt-2 border-t border-gray-100">
+                    <p className="font-semibold text-gray-600">Q: "What does he think about Israel/Ukraine/etc?"</p>
+                    <p className="text-gray-600">A: "He's running for mayor, not president. His job is to lower subway and rent prices, not foreign policy."</p>
+                  </div>
+                </div>
               </div>
               <div>
-                <p className="font-semibold text-black mb-1">В: «Почему вы это делаете бесплатно?»</p>
-                <p className="text-gray-700">О: «Потому что хочу жить в городе, где мои дети смогут себе позволить квартиру.»</p>
-                <p className="text-gray-600 italic mt-1">Because I want to live in a city where my kids can afford an apartment.</p>
+                <div className="space-y-2">
+                  <div>
+                    <p className="font-semibold text-black">В: «Почему вы это делаете бесплатно?»</p>
+                    <p className="text-gray-700">О: «Потому что хочу жить в городе, где мои дети смогут себе позволить квартиру.»</p>
+                  </div>
+                  <div className="mt-2 pt-2 border-t border-gray-100">
+                    <p className="font-semibold text-gray-600">Q: "Why are you doing this for free?"</p>
+                    <p className="text-gray-600">A: "Because I want to live in a city where my kids can afford an apartment."</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
