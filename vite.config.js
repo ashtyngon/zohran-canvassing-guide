@@ -1,7 +1,5 @@
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
 
 export default defineConfig({
-  plugins: [react()],
-  base: '/zohran-canvassing-guide/',
+  base: '/zohran-canvassing-guide/', // <-- important for GitHub Project Pages
 })
