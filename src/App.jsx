@@ -165,7 +165,7 @@ const CanvassingApp = () => {
     },
     {
       title: 'Claims of anti-Semitism / Обвинения в антисемитизме',
-      russian: 'Зохра́н — не антисеми́т. Он уважа́ет евре́йских ли́деров и рабо́тает с ни́ми по мно́гим вопро́сам. Он хо́чет, что́бы война́ зако́нчилась и изра́ильтяне с палести́нцами жи́ли ми́рно. Его́ поддéрживают мно́гие евре́и Нью-Йо́рка. Конгрессме́н Дже́рри На́длер, кото́рый представля́ет евре́йский о́круг и всю жизнь защища́л Изра́иль, откры́то поддержа́л Зохра́на. Э́то пока́зывает, что обвине́ния в антисемити́зме — э́то поли́тическая мани́пуляция.',
+      russian: 'Зохра́н — не антисеми́т. Он уважа́ет евре́йских ли́деров и рабо́тает с ни́ми по мно́гим вопро́сам. Он хо́чет, что́бы война́ зако́нчилась и изра́ильтяне с палести́нцами жи́ли ми́рно. Его́ поддéрживают мно́гие евре́и Нью-Йо́рка. Конгрессме́н Дже́рри На́dlouer, кото́рый представля́ет евре́йский о́круг и всю жизнь защища́л Изра́иль, откры́то поддержа́л Зохра́на. Э́то пока́зывает, что обвине́ния в антисемити́зме — э́то поли́тическая мани́пуляция.',
       english: 'Zohran is not an antisemite. He respects Jewish leaders and works with them on many issues. He wants the war to end so Israelis and Palestinians can live in peace. Many New York Jews support him. Congressman Jerry Nadler, who represents a Jewish district and has defended Israel his whole life, openly endorsed Zohran. This shows that antisemitism accusations are political manipulation.',
       pronunciation: 'antiseMIT, podDERzhivayut (support), maniPULyatsiya (manipulation)'
     },
@@ -589,18 +589,6 @@ const CanvassingApp = () => {
               <p className="text-xs font-semibold text-gray-700 mb-2">Материа́лы на ру́сском / Russian Materials:</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <a
-                  href="https://www.elections.ny.gov/NYSBOE/download/voting/voteformrussian.pdf"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between gap-2 px-3 py-2 bg-blue-50 hover:bg-blue-100 rounded text-sm transition-colors group"
-                >
-                  <div className="text-left">
-                    <div className="text-zohran-blue font-medium">📄 Фо́рма регистра́ции (PDF)</div>
-                    <div className="text-xs text-gray-600">Registration form in Russian</div>
-                  </div>
-                  <ExternalLink size={14} className="text-gray-400 group-hover:text-zohran-blue" />
-                </a>
-                <a
                   href="https://www.vote.nyc/elections"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -625,7 +613,7 @@ const CanvassingApp = () => {
                   <ExternalLink size={14} className="text-gray-400 group-hover:text-zohran-blue" />
                 </a>
                 <a
-                  href="https://vote.nyc/page/voter-guide"
+                  href="https://russian.nycvotes.org/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-between gap-2 px-3 py-2 bg-blue-50 hover:bg-blue-100 rounded text-sm transition-colors group"
@@ -786,8 +774,8 @@ const CanvassingApp = () => {
             <div className="space-y-3 text-sm">
               <div className="border-b border-gray-200 pb-3">
                 <div className="space-y-1">
-                  <p className="font-semibold text-black">В: «А ру́сские за кого́ обы́чно голосу́ют?»</p>
-                  <p className="text-gray-600 text-xs italic">Q: "Who do Russians usually vote for?"</p>
+                  <p className="font-semibold text-black">В: «А за кого́ надо?»</p>
+                  <p className="text-gray-600 text-xs italic">Q: "Who should I vote for?"</p>
                   <p className="text-gray-700 mt-2">О: «За того́, кто сни́зит це́ны и нало́ги. Зохра́н — еди́нственный с конкре́тным пла́ном.»</p>
                   <p className="text-gray-500 text-xs italic">A: "For whoever lowers prices and taxes. Zohran is the only one with a concrete plan."</p>
                 </div>
@@ -804,7 +792,7 @@ const CanvassingApp = () => {
                 <div className="space-y-1">
                   <p className="font-semibold text-black">В: «А что он ду́мает про Изра́иль/Украи́ну/etc?»</p>
                   <p className="text-gray-600 text-xs italic">Q: "What does he think about Israel/Ukraine/etc?"</p>
-                  <p className="text-gray-700 mt-2">О: «Он мэр го́рода, не президе́нт. Его́ рабо́та — сни́зить це́ны на метро́ и аре́нду, а не вне́шняя поли́тика.»</p>
+                  <p className="text-gray-700 mt-2">О: «Он мэр го́рода, не президе́нт. Егó рабо́та — сни́зить це́ны на метро́ и аре́нду, а не вне́шняя поли́тика.»</p>
                   <p className="text-gray-500 text-xs italic">A: "He's running for mayor, not president. His job is to lower subway and rent prices, not foreign policy."</p>
                 </div>
               </div>
@@ -1360,6 +1348,20 @@ const CanvassingApp = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <style>{`
+        .bg-zohran-blue { background-color: #1e40af; }
+        .text-zohran-blue { color: #1e40af; }
+        .border-zohran-blue { border-color: #1e40af; }
+        .bg-zohran-orange { background-color: #f97316; }
+        .text-zohran-orange { color: #f97316; }
+        .border-zohran-orange { border-color: #f97316; }
+        .bg-zohran-red { background-color: #dc2626; }
+        .text-zohran-red { color: #dc2626; }
+        .border-zohran-red { border-color: #dc2626; }
+        .hover\\:bg-zohran-orange:hover { background-color: #f97316; }
+        .hover\\:bg-blue-700:hover { background-color: #1d4ed8; }
+      `}</style>
+      
       <div className="bg-zohran-blue text-white shadow-lg sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 py-4 sm:py-5">
           <div className="flex items-center justify-between">
@@ -1431,3 +1433,5 @@ const CanvassingApp = () => {
 };
 
 export default CanvassingApp;
+
+
