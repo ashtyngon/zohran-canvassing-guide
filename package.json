@@ -2,7 +2,7 @@
   "name": "zohran-canvassing-guide",
   "version": "1.0.0",
   "type": "module",
-  "description": "Volunteer canvassing guide for Zohran Mamdani's NYC mayoral campaign - Russian-speaking Brooklyn voters",
+  "description": "Brighton Beach canvassing guide for Zohran Mamdani's NYC mayoral campaign - Russian-speaking voters",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
