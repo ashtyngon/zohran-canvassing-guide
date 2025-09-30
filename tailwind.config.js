@@ -12,7 +12,8 @@ export default {
         'zohran-red': '#ea2f15',
       },
       fontFamily: {
-        'sans': ['Jost', 'system-ui', '-apple-system', 'sans-serif'],
+        'sans': ['Gotham', 'Montserrat', 'system-ui', '-apple-system', 'sans-serif'],
+        'headline': ['Gotham', 'Montserrat', 'system-ui', 'sans-serif'],
       }
     },
   },
