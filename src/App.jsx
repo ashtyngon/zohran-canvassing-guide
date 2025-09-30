@@ -1,461 +1,988 @@
-import { useEffect, useMemo, useState } from "react";
+import React, { useState, useMemo } from 'react';
+import { Search, Home, Users, DollarSign, Shield, AlertCircle, BookOpen, ChevronRight, Menu, X } from 'lucide-react';
 
-/**
- * Single-page, bilingual decision tree (RU primary, EN secondary).
- * Чистые Tailwind-утилиты, без @apply и кастомных цветов.
- * CTA — orange-600/700; навигация/язык/лого — blue-600/700.
- */
+const CanvassingApp = () => {
+  const [activeSection, setActiveSection] = useState('home');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [menuOpen, setMenuOpen] = useState(false);
 
-const LINKS = {
-  vote: "https://vote.nyc",
-  register: "https://e-register.vote.nyc/registration",
-  absentee: "https://requestballot.vote.nyc/absentee",
-  earlymail: "https://requestballot.vote.nyc/earlymail",
-};
-
-const NAMES_RU = {
-  intro: "Вступление",
-  offer: "Программа",
-  support: "Поддержка",
-  yes: "Ветка: Да",
-  lean: "Ветка: Скорее/Не уверен",
-  oppose: "Ветка: Против",
-  plan: "План голосования",
-  ask: "Предложение для сторонников",
-  details: "Контакты",
-  wrap_no: "Завершение (против)",
-  wrap: "Завершение",
-};
-
-const NAMES_EN = {
-  intro: "Introduction",
-  offer: "Offer",
-  support: "Support",
-  yes: "Branch: Yes",
-  lean: "Branch: Lean/Undecided",
-  oppose: "Branch: Opposed",
-  plan: "Voting plan",
-  ask: "Supporter ask",
-  details: "Details",
-  wrap_no: "Wrap (opposed)",
-  wrap: "Wrap",
-};
-
-function Btn({ children, variant = "solid", ...props }) {
-  const base =
-    "inline-flex items-center justify-center rounded-xl px-3 py-2 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-offset-2";
-  const variants = {
-    solid:
-      "bg-orange-600 text-white hover:bg-orange-700 focus-visible:ring-orange-600",
-    outline:
-      "border border-slate-300 text-slate-800 hover:bg-slate-100 focus-visible:ring-slate-400",
-    ghost:
-      "text-slate-800 hover:bg-slate-100 focus-visible:ring-slate-400",
+  const sections = {
+    home: { title: 'Home', icon: Home },
+    priorities: { title: 'Key Priorities', icon: AlertCircle },
+    questions: { title: 'Persuasion Questions', icon: Users },
+    affinity: { title: 'Identity-Based Persuasion', icon: Users },
+    platform: { title: 'Zohran\'s Platform', icon: DollarSign },
+    concerns: { title: 'Addressing Concerns', icon: Shield },
+    cuomo: { title: 'About Cuomo', icon: AlertCircle },
+    additional: { title: 'Area Report', icon: BookOpen }
   };
-  return (
-    <button className={`${base} ${variants[variant]}`} {...props}>
-      {children}
-    </button>
-  );
-}
 
-function SegBtn({ active, children, ...props }) {
-  return (
-    <button
-      aria-pressed={active}
-      className={`inline-flex items-center rounded-xl border px-3 py-2 text-sm font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
-        active
-          ? "border-blue-600 text-blue-700 focus-visible:ring-blue-600"
-          : "border-slate-300 text-slate-800 hover:bg-slate-100 focus-visible:ring-slate-400"
-      }`}
-      {...props}
-    >
-      {children}
-    </button>
-  );
-}
+  const priorities = [
+    {
+      title: 'We need a mayor who will fight to lower the cost of living',
+      russian: 'Нам ну́жен мэр, кото́рый бу́дет боро́ться за сниже́ние сто́имости жи́зни.',
+      english: 'We need a mayor who will fight to lower the cost of living.',
+      pronunciation: 'boROtsya (to fight), sniZHEniye (lowering)'
+    },
+    {
+      title: 'About Zohran',
+      russian: 'Зохра́н Мамда́ни три сро́ка рабо́тает в Ассамбле́е шта́та Нью-Йо́рк. Он вы́играл пра́ймериз (предвари́тельные вы́боры) на пост мэ́ра в ию́не.',
+      english: 'Zohran Mamdani is a 3-term NY Assembly member and won the mayoral primaries in June.',
+      pronunciation: 'AssambLEya (Assembly), PRAYmeriz (primaries)'
+    },
+    {
+      title: 'Lowering the cost of living',
+      russian: 'Он сни́зит сто́имость жи́зни. Семья́м бо́льше не придётся уезжа́ть из го́рода и́з-за роста аре́нды.',
+      english: 'He will lower the cost of living. Families won\'t have to leave due to rising rent.'
+    }
+  ];
 
-function Node({ id, activeId, children }) {
-  return (
-    <section
-      data-node={id}
-      className={[
-        "rounded-xl border border-slate-200 bg-slate-50 p-4",
-        activeId === id ? "" : "hidden",
-      ].join(" ")}
-    >
-      {children}
-    </section>
-  );
-}
+  const persuasionQuestions = [
+    {
+      category: 'Economic Reality',
+      russian: 'Вам то́же ста́ло тру́днее справля́ться с расхо́дами? Аре́нда подня́лась?',
+      english: 'Have you also found it harder to afford expenses? Has your rent gone up?',
+      pronunciation: 'spravLYAtsya (to cope with), rasKHOdy (expenses)',
+      followup: 'If yes: "Zohran will freeze rent for 2+ million rent-stabilized apartments. Куо́мо не замóрозит — аре́нда вы́растет на 5%."'
+    },
+    {
+      category: 'Trump\'s Threats',
+      russian: 'Вы зна́ете, что Трамп угрожа́ет уре́зать финанси́рование Нью-Йóрка, е́сли Зохра́н ста́нет мэ́ром? Э́то в ва́ших интере́сах?',
+      english: 'Do you know Trump is threatening to cut NYC funding if Zohran becomes mayor? Is that in your interest?',
+      pronunciation: 'ugroZHAyet (is threatening), urEzat (to cut)',
+      followup: 'Трамп предпочита́ет Куóмо, потомý что с ним мóжно договори́ться. Вы хоти́те мэ́ра, кото́рый продаёт Нью-Йóрк Трáмпу? (Trump prefers Cuomo because he can make deals with him. Do you want a mayor who sells NYC out to Trump?)'
+    },
+    {
+      category: 'Family Future',
+      russian: 'Смогу́т ли ва́ши де́ти и вну́ки оста́ться жить в Нью-Йóрке? И́ли им придётся уе́хать во Флóриду и́ли Нью-Дже́рси и́з-за аре́нды $4,000 в ме́сяц?',
+      english: 'Will your children and grandchildren be able to stay in New York? Or will they have to move to Florida or New Jersey because rent is $4,000/month?',
+      pronunciation: 'SMOgut (will be able), VNUki (grandchildren)',
+      followup: 'Зохра́н хóчет, что́бы сле́дующее поколе́ние могло́ стро́ить жизнь здесь — как вы, когда́ приéхали. (Zohran wants the next generation to build lives here — like you did when you arrived.)'
+    },
+    {
+      category: 'Cuomo\'s Record',
+      russian: 'Вы пóмните, что Куóмо ушёл в отста́вку в позóре? Сексуа́льные домога́тельства 11 же́нщин. Скрыл смéрти от COVID в дома́х престаре́лых.',
+      english: 'Do you remember that Cuomo resigned in disgrace? Sexually harassed 11 women. Covered up COVID deaths in nursing homes.',
+      pronunciation: 'otSTAvku (resignation), domoGAtelstva (harassment), prestaRElykh (elderly/nursing)',
+      followup: 'DOJ всё ещё рассле́дует егó. Э́то тот челове́к, котóрому вы довéряете? (DOJ is still investigating him. Is that the person you trust?)'
+    },
+    {
+      category: 'Crime Data',
+      russian: 'Вы зна́ете, что престу́пность в Нью-Йóрке на истори́ческом ми́нимуме? Уби́йства -34%, стрельба́ -23%.',
+      english: 'Do you know that NYC crime is at historic lows? Murders -34%, shootings -23%.',
+      pronunciation: 'prestUPnost (crime), istoriCHEskom (historic), uBIYstva (murders)',
+      followup: 'Трамп и Куóмо пуга́ют вас специа́льно. Дáнные доказы́вают — го́род безопáснее, чем был. (Trump and Cuomo are scaring you on purpose. Data proves — the city is safer than it was.)'
+    },
+    {
+      category: 'Richest City',
+      russian: 'Э́то са́мый бога́тый го́род в са́мой бога́той стране́ ми́ра за всю исто́рию челове́чества. Почему́ мы не мо́жем позво́лить себе́ бесплáтный де́тский сад, когда́ Фра́нция и Герма́ния мо́гут?',
+      english: 'This is the richest city in the richest country in the history of the world. Why can\'t we afford free childcare when France and Germany can?',
+      pronunciation: 'boGAty (rich), pozVOlit (afford), cheloVEchestva (humanity)',
+      followup: 'Де́нег доста́точно. Вопро́с в том, что мы приоритизи́руем — по́мощь рабо́чим лю́дям и́ли нало́говые льго́ты для миллиарде́ров? (There\'s enough money. The question is what we prioritize — helping working people or tax breaks for billionaires?)'
+    }
+  ];
 
-function LangLine({ ru, en, className = "" }) {
-  return (
-    <div className={className}>
-      <div className="ru">{ru}</div>
-      <div className="en text-slate-600 text-[0.95em]">{en}</div>
-    </div>
-  );
-}
+  const affinityGroups = [
+    {
+      group: 'Ukrainians / Українці',
+      points: [
+        {
+          russian: 'Зохра́н хóчет останови́ть вóйну в Палести́не. Почемý э́то ва́жно для Украи́ны? Когда́ Изра́иль мóжет соверша́ть престу́пные дéйствия безнаказ́анно, Росси́я ви́дит, что и ей мóжно. Междунарóдное прáво рабóтает для всех и́ли ни для когó.',
+          english: 'Zohran wants to stop the war in Palestine. Why does this matter for Ukraine? When Israel can commit criminal actions with impunity, Russia sees that it can too. International law works for everyone or for no one.',
+          pronunciation: 'ostanoVIT (to stop), beznaKAZanno (with impunity)'
+        },
+        {
+          russian: 'Путин — автокрáт. Трамп и Путин — друзья́. До недáвнего врéмени Трамп выбирáл Пу́тина, а не Зеле́нского. Куóмо бу́дет рабóтать с Трáмпом. Вам нýжен мэр, котóрый продаёт го́род Трáмпу и Пу́тину?',
+          english: 'Putin is an autocrat. Trump and Putin are friends. Until recently Trump chose Putin over Zelensky. Cuomo will work with Trump. Do you want a mayor who sells the city to Trump and Putin?',
+          pronunciation: 'avtoKRAT (autocrat), prodaYOt (sells out)'
+        }
+      ]
+    },
+    {
+      group: 'Central Asians / Орто Азиялықтар (Uzbek, Tajik, Kazakh, Kyrgyz)',
+      points: [
+        {
+          russian: 'Зохра́н — пéрвый мусульмани́н и пéрвый выходе́ц из Ю́жной А́зии, котóрый мóжет стать мэ́ром Нью-Йóрка. Э́то истори́ческий момéнт для на́шего сообщéства.',
+          english: 'Zohran is the first Muslim and first South Asian who can become NYC mayor. This is a historic moment for our community.',
+          pronunciation: 'musulmaNIN (Muslim), vykhoDEts (person from)'
+        }
+      ]
+    },
+    {
+      group: 'Orthodox Jews / Ортодоксальные евреи',
+      points: [
+        {
+          russian: 'Зохра́н — не антисеми́т. Егó поддéрживает конгрессмéн Джéрри Нáдлер, котóрый предстaвля́ет евре́йский óкруг и всю жизнь поддéрживал Изра́иль.',
+          english: 'Zohran is not an antisemite. He\'s supported by Congressman Jerry Nadler, who represents a Jewish district and has supported Israel his whole life.',
+          pronunciation: 'antiseMIT, podDERzhivayet (supports)'
+        }
+      ]
+    }
+  ];
 
-function TopBar({ lang, setLang, crumbsRU, crumbsEN }) {
-  return (
-    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white">
-      <div className="mx-auto flex max-w-5xl items-center gap-3 px-4 py-3">
-        <div className="flex items-center gap-2">
-          <div className="grid h-8 w-8 place-items-center rounded-xl bg-blue-600 font-bold text-white">
-            Z
-          </div>
-          <div className="font-semibold">Zohran 2025 — Door Script</div>
-        </div>
-        <div className="ml-auto flex items-center gap-2">
-          <span className="rounded-full border border-slate-300 px-2 py-0.5 text-[11px] text-slate-600">
-            Decision Tree
-          </span>
-          <SegBtn active={lang === "RU"} onClick={() => setLang("RU")}>RU</SegBtn>
-          <SegBtn active={lang === "EN"} onClick={() => setLang("EN")}>EN</SegBtn>
-          <SegBtn active={lang === "BOTH"} onClick={() => setLang("BOTH")}>RU+EN</SegBtn>
-          <SegBtn
-            onClick={() => {
-              window.location.hash = "#intro";
-              window.location.reload();
-            }}
-          >
-            Reset
-          </SegBtn>
-          <SegBtn onClick={() => window.print()}>Print</SegBtn>
-        </div>
-      </div>
+  const platform = [
+    {
+      title: 'Freeze rent',
+      russian: 'Заморóзит аре́ндную пла́ту для rent-stabilized (со стабилизи́рованной аре́ндой) жильцо́в',
+      english: 'Freeze the rent for rent-stabilized tenants'
+    },
+    {
+      title: 'Raise minimum wage',
+      russian: 'Повы́сит минима́льную почасову́ю опла́ту до $30 к 2030 го́ду',
+      english: 'Raise the minimum wage to $30/hour by 2030'
+    },
+    {
+      title: 'Affordable housing',
+      russian: 'Постро́ит 200,000 кварти́р с досту́пной аре́ндой',
+      english: 'Build 200,000 affordable apartments'
+    },
+    {
+      title: 'Free childcare',
+      russian: 'Сде́лает де́тский сад бесплáтным для всех дете́й от 6 недéль до 5 лет',
+      english: 'Make childcare free for all children from 6 weeks to 5 years old'
+    },
+    {
+      title: 'Against bad landlords',
+      russian: 'Ужéсточит мéры прóтив недобросóвестных арендодáтелей',
+      english: 'Take action against bad landlords'
+    },
+    {
+      title: 'Free buses',
+      russian: 'Сде́лает авто́бусы бы́стрыми и бесплáтными. Зохра́н уже́ запусти́л пило́т бесплат́ных авто́бусов — лю́ди ста́ли бо́льше по́льзоваться авто́бусами, пое́здки ста́ли безопáснее.',
+      english: 'Make buses fast and free. Zohran already ran a pilot of free buses and people started to use them more and trips became safer.'
+    }
+  ];
 
-      <div className="mx-auto grid max-w-5xl grid-cols-1 gap-3 px-4 pb-3">
-        <div className="rounded-2xl border border-slate-200 bg-white p-3">
-          <div className="ru text-sm">
-            <strong>Маршрут:</strong>{" "}
-            <span className="text-slate-600">{crumbsRU || "Начало"}</span>
-          </div>
-          <div className="en text-sm">
-            <strong>Path:</strong>{" "}
-            <span className="text-slate-600">{crumbsEN || "Start"}</span>
-          </div>
-        </div>
-      </div>
-    </header>
-  );
-}
+  const concerns = [
+    {
+      title: 'Safety / Безопасность',
+      russian: 'Я то́же хочу́ жить в безопáсном го́роде. Зохра́н созда́ст но́вый отде́л безопáсности — он бу́дет вклады́вать в психи́ческое здоро́вье, де́лать у́лицы и метро́ безопáснее, сокраща́ть бездо́мность, предотвраща́ть вооружённое наси́лие. Он не про́тив поли́ции, он про́тив того́, что́бы поли́ция — вме́сто того́, что́бы лови́ть реа́льных престу́пников — вози́лась с те́ми, у кого́ психологи́ческие пробле́мы. И́менно поэ́тому он создаёт департа́мент обще́ственной безопа́сности, что́бы на вы́зовы к лю́дям с психи́ческими пробле́мами приезжа́ли социа́льные рабо́тники и подгото́вленные специали́сты, кото́рые мо́гут им помо́чь. Ина́че мы никогда́ не реши́м э́ту пробле́му.',
+      english: 'I also want to live in a safe city. Zohran will create a new public safety department that will invest in mental health, make streets and subways safer, reduce homelessness, and prevent gun violence. He\'s not against police — he\'s against police having to deal with mental health crises instead of catching real criminals. That\'s why he\'s creating a public safety department, so that calls involving people with mental health issues are handled by social workers and trained specialists who can actually help them. Otherwise we\'ll never solve this problem.',
+      pronunciation: 'bezoPASnost (safety), prestUPnikov (criminals), psikholoGIcheskie (psychological)'
+    },
+    {
+      title: 'Claims of anti-Semitism / Обвинения в антисемитизме',
+      russian: 'Зохра́н — не антисеми́т. Он уважа́ет евре́йских ли́деров и рабо́тает с ни́ми по мно́гим вопро́сам. Он хо́чет, что́бы война́ зако́нчилась и изра́ильтяне с палести́нцами жи́ли ми́рно. Его́ поддéрживают мно́гие евре́и Нью-Йо́рка. Конгрессме́н Дже́рри На́длер, кото́рый представля́ет евре́йский о́круг и всю жизнь защища́л Изра́иль, откры́то поддержа́л Зохра́на. Э́то пока́зывает, что обвине́ния в антисемити́зме — э́то поли́тическая мани́пуляция.',
+      english: 'Zohran is not an antisemite. He respects Jewish leaders and works with them on many issues. He wants the war to end so Israelis and Palestinians can live in peace. Many New York Jews support him. Congressman Jerry Nadler, who represents a Jewish district and has defended Israel his whole life, openly endorsed Zohran. This shows that antisemitism accusations are political manipulation.',
+      pronunciation: 'antiseMIT, podDERzhivayut (support), maniPULyatsiya (manipulation)'
+    },
+    {
+      title: 'Communism/socialism concerns / Страхи о коммунизме',
+      russian: 'Зохра́н — не коммуни́ст. «Демократи́ческий социали́зм» зна́чит: эконо́мика до́лжна рабо́тать для просты́х люде́й, кото́рые здесь живу́т и рабо́тают. Он не создаёт но́вый СССР. Он хо́чет, что́бы жизнь в Нью-Йо́рке была́ досту́пнее для просты́х люде́й. Во Фра́нции, Герма́нии, Япо́нии — капиталисти́ческих стра́нах — есть бесплáтный де́тский сад и медици́на. Э́то не коммуни́зм. Э́то забо́та о гра́жданах. Зохра́н хо́чет, что́бы Нью-Йо́рк рабо́тал для тех, кто здесь живёт, а не для миллиарде́ров.',
+      english: 'Zohran is not a communist. "Democratic Socialism" means: the economy should work for regular people who live and work here. He\'s not creating a new USSR. He wants to make NYC more affordable for working people. In France, Germany, Japan — capitalist countries — they have free childcare and healthcare. That\'s not communism. That\'s caring for citizens. Zohran wants New York to work for those who live here, not for billionaires.',
+      pronunciation: 'kommunIST, dostuPNEye (more affordable), milliardYOrov (billionaires)'
+    },
+    {
+      title: 'How will we pay for it? / Как мы за это заплатим?',
+      russian: 'Когда́ говоря́т, что мы не мо́жем э́то позво́лить: «Э́то са́мый бога́тый го́род в са́мой бога́той стране́ ми́ра за всю исто́рию челове́чества. Вы понима́ете, что вы вообще́ говори́те? Де́нег доста́точно, вопро́с в том, как систе́ма вы́строена и что мы приоритизи́руем». Зохра́н возьмёт нало́ги с топ-1% — тех, кто зараба́тывает бо́льше миллио́на до́лларов в год. Не с рабо́чих люде́й. Е́сли уравня́ть корпорати́вный нало́г с у́ровнем Нью-Дже́рси, го́род полу́чит 5 миллиа́рдов до́лларов.',
+      english: 'When they say we can\'t afford it: "This is the richest city in the richest country in the history of the world. Do you understand what you\'re even saying? There\'s enough money, the question is how the system is structured and what we prioritize." Zohran will tax the top 1% — those making over $1 million a year. Not working people. Just matching New Jersey\'s corporate tax rate would bring in $5 billion.',
+      pronunciation: 'pozVOlit (afford), prioritiZIruyem (prioritize), milliARdov (billions)'
+    }
+  ];
 
-export default function App() {
-  const [lang, setLang] = useState(localStorage.getItem("zcg-lang") || "RU");
-  const [active, setActive] = useState("intro");
-  const [trail, setTrail] = useState(["intro"]);
-  const [noteRU, setNoteRU] = useState(
-    JSON.parse(localStorage.getItem("zcg-notes") || "{}").issueRU || ""
-  );
-  const [noteEN, setNoteEN] = useState(
-    JSON.parse(localStorage.getItem("zcg-notes") || "{}").issueEN || ""
-  );
+  const cuomoPoints = [
+    {
+      russian: 'Куó́мо ста́вит интере́сы бога́тых доно́ров вы́ше интере́сов жи́телей Нью-Йóрка. Когда́ он был губернáтором, он уре́зал финанси́рование тра́нспорта и школ.',
+      english: 'Cuomo puts wealthy donors\' interests above NYC residents. When Governor, he cut funding for transit and schools.'
+    },
+    {
+      russian: 'Он сде́лал аре́нду неподъёмной для просты́х люде́й.',
+      english: 'He made rent unaffordable for average people.'
+    },
+    {
+      russian: 'Он заста́вил дома́ престаре́лых принима́ть пацие́нтов с COVID и скрыл коли́чество уме́рших.',
+      english: 'He forced nursing homes to accept COVID patients and covered up deaths.'
+    },
+    {
+      russian: 'И́з-за егó сканда́лов и преступле́ний ему́ пришло́сь уйти́ в отста́вку.',
+      english: 'Because of his scandals and crimes, he had to resign.'
+    }
+  ];
 
-  // переключение отображения языков: RU — основной, EN — подпись (или оба)
-  useEffect(() => {
-    localStorage.setItem("zcg-lang", lang);
-    const el = document.body;
-    el.classList.remove("hidden-ru", "hidden-en");
-    if (lang === "RU") el.classList.add("hidden-en");
-    if (lang === "EN") el.classList.add("hidden-ru");
-  }, [lang]);
+  // Build searchable content
+  const allContent = useMemo(() => {
+    const content = [];
+    
+    // Add priorities
+    priorities.forEach(item => {
+      content.push({
+        section: 'priorities',
+        text: `${item.title} ${item.russian} ${item.english} ${item.pronunciation || ''}`
+      });
+    });
 
-  // восстановление активного шага из hash
-  useEffect(() => {
-    const applyFromHash = () => {
-      const parts = window.location.hash.replace("#", "").split("/").filter(Boolean);
-      const last = parts[parts.length - 1] || "intro";
-      setActive(last);
-      setTrail(parts.length ? parts : ["intro"]);
-    };
-    applyFromHash();
-    window.addEventListener("hashchange", applyFromHash);
-    return () => window.removeEventListener("hashchange", applyFromHash);
+    // Add persuasion questions
+    persuasionQuestions.forEach(item => {
+      content.push({
+        section: 'questions',
+        text: `${item.category} ${item.russian} ${item.english} ${item.pronunciation || ''} ${item.followup || ''}`
+      });
+    });
+
+    // Add affinity groups
+    affinityGroups.forEach(group => {
+      group.points.forEach(point => {
+        content.push({
+          section: 'affinity',
+          text: `${group.group} ${point.russian} ${point.english} ${point.pronunciation || ''}`
+        });
+      });
+    });
+
+    // Add platform
+    platform.forEach(item => {
+      content.push({
+        section: 'platform',
+        text: `${item.title} ${item.russian} ${item.english}`
+      });
+    });
+
+    // Add concerns
+    concerns.forEach(item => {
+      content.push({
+        section: 'concerns',
+        text: `${item.title} ${item.russian} ${item.english}`
+      });
+    });
+
+    // Add Cuomo points
+    cuomoPoints.forEach(item => {
+      content.push({
+        section: 'cuomo',
+        text: `${item.russian} ${item.english}`
+      });
+    });
+
+    // Add additional content keywords
+    content.push({
+      section: 'additional',
+      text: 'Brighton Beach Brooklyn Russian speakers voting Republican demographics Uzbek Tajik Pakistani Muslim voters primary results crime statistics murders shootings safety Inna Vernikov Gregory Lyakhov Soviet trauma communism socialism bread lines antisemite Palestine Israel Mikhail Novakhov Central Asian Nowruz Odessa Georgia Armenian Ukrainian Putin Trump Cuomo funding referendum recall'
+    });
+
+    return content;
   }, []);
 
-  // сохранение заметок в localStorage
-  useEffect(() => {
-    localStorage.setItem(
-      "zcg-notes",
-      JSON.stringify({ issueRU: noteRU, issueEN: noteEN })
+  // Search logic
+  const searchResults = useMemo(() => {
+    if (!searchTerm.trim()) {
+      return { matchingSections: new Set(Object.keys(sections)), hasResults: true };
+    }
+
+    const query = searchTerm.toLowerCase();
+    const matchingSections = new Set();
+
+    allContent.forEach(item => {
+      if (item.text.toLowerCase().includes(query)) {
+        matchingSections.add(item.section);
+      }
+    });
+
+    // Also check section titles
+    Object.entries(sections).forEach(([key, section]) => {
+      if (section.title.toLowerCase().includes(query)) {
+        matchingSections.add(key);
+      }
+    });
+
+    return { 
+      matchingSections, 
+      hasResults: matchingSections.size > 0 
+    };
+  }, [searchTerm, allContent]);
+
+  const NavButton = ({ sectionKey, section }) => {
+    const Icon = section.icon;
+    const isVisible = searchResults.matchingSections.has(sectionKey);
+    const hasMatch = searchTerm && isVisible;
+    
+    if (searchTerm && !isVisible) return null;
+    
+    return (
+      <button
+        onClick={() => {
+          setActiveSection(sectionKey);
+          setMenuOpen(false);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+        className={`w-full flex items-center gap-3 px-4 py-4 rounded-lg transition-all touch-manipulation ${
+          activeSection === sectionKey
+            ? 'bg-zohran-blue text-white shadow-md'
+            : hasMatch
+            ? 'bg-white text-black border-2 border-zohran-orange hover:bg-zohran-orange hover:text-white'
+            : 'bg-white text-black hover:bg-gray-100 active:bg-gray-200 border border-gray-300'
+        }`}
+      >
+        <Icon size={22} className="flex-shrink-0" />
+        <span className="font-medium text-left">{section.title}</span>
+        {hasMatch && (
+          <span className="ml-auto bg-zohran-orange text-white text-xs px-2 py-1 rounded-full">
+            Match
+          </span>
+        )}
+        {!hasMatch && <ChevronRight size={18} className="ml-auto flex-shrink-0" />}
+      </button>
     );
-  }, [noteRU, noteEN]);
+  };
 
-  const crumbsRU = useMemo(
-    () => trail.map((t) => NAMES_RU[t] || t).join(" → "),
-    [trail]
-  );
-  const crumbsEN = useMemo(
-    () => trail.map((t) => NAMES_EN[t] || t).join(" → "),
-    [trail]
-  );
+  const renderContent = () => {
+    // Show no results message if searching and nothing found
+    if (searchTerm && !searchResults.hasResults) {
+      return (
+        <div className="bg-white p-8 rounded-lg shadow-md text-center">
+          <p className="text-black text-lg mb-2">No results found for "{searchTerm}"</p>
+          <button
+            onClick={() => setSearchTerm('')}
+            className="text-zohran-blue hover:text-blue-800 font-medium"
+          >
+            Clear search
+          </button>
+        </div>
+      );
+    }
 
-  function go(next) {
-    const nextTrail = [...trail, next];
-    window.location.hash = nextTrail.join("/");
-    // hashchange обновит состояние
-  }
-
-  return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
-      <TopBar
-        lang={lang}
-        setLang={setLang}
-        crumbsRU={crumbsRU}
-        crumbsEN={crumbsEN}
-      />
-
-      <main className="mx-auto max-w-5xl px-4 py-6">
-        {/* верхняя панель: заметки и ссылки */}
-        <section className="mb-4 grid grid-cols-1 gap-3 md:grid-cols-3">
-          <div className="rounded-2xl border border-slate-200 bg-white p-3">
-            <div className="ru text-sm">
-              <strong>Пометки:</strong>{" "}
-              <input
-                value={noteRU}
-                onChange={(e) => setNoteRU(e.target.value)}
-                className="ml-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-2 py-1"
-                placeholder="Что важно человеку"
-              />
+    if (activeSection === 'home') {
+      return (
+        <div className="space-y-4 sm:space-y-6">
+          {searchTerm && (
+            <div className="bg-white border-2 border-zohran-orange p-4 rounded">
+              <p className="text-black">
+                Found matches in {searchResults.matchingSections.size} sections for "{searchTerm}"
+              </p>
             </div>
-            <div className="en text-sm">
-              <strong>Notes:</strong>{" "}
-              <input
-                value={noteEN}
-                onChange={(e) => setNoteEN(e.target.value)}
-                className="ml-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-2 py-1"
-                placeholder="Voter's key issue"
-              />
-            </div>
+          )}
+          
+          <div className="bg-zohran-blue text-white p-5 sm:p-6 rounded-xl shadow-lg">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-3">Brighton Beach Canvassing Guide</h2>
+            <p className="text-white opacity-90 leading-relaxed text-base sm:text-lg">
+              Russian-speaking voters for Zohran Mamdani's NYC mayoral campaign
+            </p>
+          </div>
+          
+          <div className="bg-white border-2 border-zohran-orange p-4 sm:p-5 rounded">
+            <p className="text-black font-medium text-base sm:text-lg">
+              Глáвный совéт: Говори́те об эконóмике, а не об идеолóгии / Key tip: Talk about economics, not ideology
+            </p>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-3">
-            <div className="text-sm">Официальные ссылки / Official links</div>
-            <div className="mt-2 grid grid-cols-2 gap-2">
-              <a
-                className="inline-flex items-center justify-center rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold hover:bg-slate-100"
-                href={LINKS.vote}
-                target="_blank"
-                rel="noreferrer"
-              >
-                vote.nyc
-              </a>
-              <a
-                className="inline-flex items-center justify-center rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold hover:bg-slate-100"
-                href={LINKS.register}
-                target="_blank"
-                rel="noreferrer"
-              >
-                e-register
-              </a>
-              <a
-                className="inline-flex items-center justify-center rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold hover:bg-slate-100"
-                href={LINKS.absentee}
-                target="_blank"
-                rel="noreferrer"
-              >
-                absentee
-              </a>
-              <a
-                className="inline-flex items-center justify-center rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold hover:bg-slate-100"
-                href={LINKS.earlymail}
-                target="_blank"
-                rel="noreferrer"
-              >
-                early mail
-              </a>
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-slate-200 bg-white p-3">
-            <div className="text-sm">Подсказки</div>
-            <ul className="mt-2 list-disc pl-5 text-sm text-slate-600">
-              <li>Зачитывай даты/адреса с официальных сайтов, не пересказывай.</li>
-              <li>Коротко. Без споров. Один чёткий «ask» за разговор.</li>
-            </ul>
-          </div>
-        </section>
-
-        {/* ДЕРЕВО */}
-        <section className="space-y-4 rounded-2xl border border-slate-200 bg-white p-4">
-          {/* 1 Intro */}
-          <Node id="intro" activeId={active}>
-            <h2 className="ru text-base font-semibold">1) Вступление</h2>
-            <LangLine
-              ru='Здравствуйте! [ИМЯ]? Я [ВАШЕ ИМЯ], волонтёр кампании демократического кандидата в мэры — Зохрана Мамдани. 4 ноября выборы мэра.'
-              en="Hi! Is [VOTER NAME] available? I’m [YOUR NAME], a volunteer for the Democratic candidate for mayor, Zohran Mamdani. The election is on November 4."
-              className="mt-1"
-            />
-            <div className="mt-3 flex flex-wrap gap-2">
-              <Btn onClick={() => go("offer")}>Дальше / Next</Btn>
-            </div>
-          </Node>
-
-          {/* 2 Offer */}
-          <Node id="offer" activeId={active}>
-            <h2 className="ru text-base font-semibold">2) Коротко о программе</h2>
-            <LangLine
-              ru="Бесплатные и быстрые автобусы; заморозка аренды для жильцов с регулируемой ставкой; доступный уход за детьми. Что важнее для вас лично?"
-              en="Free & fast buses; rent freeze for rent-stabilized tenants; universal childcare. Which matters most to you?"
-              className="mt-1"
-            />
-            <div className="mt-2 text-sm text-slate-600">
-              Подсказка: зафиксируйте тему в «Пометках» наверху.
-            </div>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <Btn onClick={() => go("support")}>Дальше / Next</Btn>
-            </div>
-          </Node>
-
-          {/* 3 Support */}
-          <Node id="support" activeId={active}>
-            <h2 className="ru text-base font-semibold">3) Вопрос о поддержке</h2>
-            <LangLine
-              ru="Я поддерживаю Зохрана, потому что ___. А вы планируете голосовать за него?"
-              en="I’m voting for Zohran because ___. Do you plan to vote for him?"
-              className="mt-1"
-            />
-            <div className="mt-3 grid gap-2 sm:grid-cols-3">
-              <Btn onClick={() => go("yes")}>Да, твёрдо / Strong Yes</Btn>
-              <Btn variant="outline" onClick={() => go("lean")}>Скорее да / Не уверен(а)</Btn>
-              <Btn variant="outline" onClick={() => go("oppose")}>Против / Opposed</Btn>
-            </div>
-          </Node>
-
-          {/* 4A Yes */}
-          <Node id="yes" activeId={active}>
-            <h2 className="ru text-base font-semibold">4A) Если «Да»</h2>
-            <LangLine
-              ru="Отлично! 4 ноября участки открыты с 6:00 до 21:00. Досрочное голосование — даты и часы смотрите на официальном сайте."
-              en="Great! On Nov 4, polls are open 6AM–9PM. For early voting dates/hours, read from the official site."
-              className="mt-1"
-            />
-            <div className="mt-3">
-              <Btn onClick={() => go("plan")}>К плану голосования</Btn>
-            </div>
-          </Node>
-
-          {/* 4B Lean */}
-          <Node id="lean" activeId={active}>
-            <h2 className="ru text-base font-semibold">4B) Если «Скорее да / Не уверен(а)»</h2>
-            <LangLine
-              ru="Понимаю. Что для вас самое важное от мэра? (Коротко перефразируйте и свяжите с пунктами программы.)"
-              en="I hear you. What matters most in a mayor? (Reflect briefly and tie to policy.)"
-              className="mt-1"
-            />
-            <div className="mt-3">
-              <Btn onClick={() => go("plan")}>К плану голосования</Btn>
-            </div>
-          </Node>
-
-          {/* 4C Opposed */}
-          <Node id="oppose" activeId={active}>
-            <h2 className="ru text-base font-semibold">4C) Если «Против»</h2>
-            <LangLine
-              ru="Спасибо, что сказали. Хорошего дня!"
-              en="Thanks for sharing — have a good day!"
-              className="mt-1"
-            />
-            <div className="mt-3">
-              <Btn variant="outline" onClick={() => go("wrap_no")}>Завершить</Btn>
-            </div>
-          </Node>
-
-          {/* 5 Voting plan */}
-          <Node id="plan" activeId={active}>
-            <h2 className="ru text-base font-semibold">5) План голосования</h2>
-            <div className="mt-1 ru">
-              <ul className="list-inside list-disc space-y-1">
-                <li>Вы зарегистрированы?</li>
-                <li>Знаете адрес вашего участка?</li>
-                <li>Будете голосовать в день выборов, досрочно или по почте?</li>
+          <div className="grid gap-4">
+            <div className="bg-white p-5 sm:p-6 rounded-lg shadow-md border-l-4 border-zohran-blue">
+              <h3 className="font-bold text-lg sm:text-xl mb-3 text-zohran-blue">Quick Facts / Быстрые факты</h3>
+              <ul className="space-y-2 text-black text-base sm:text-lg">
+                <li>✓ 121,607 рýсскоговорящих / Russian speakers in Brooklyn</li>
+                <li>✓ 70-80% голосýют за республикáнцев / vote Republican</li>
+                <li>✓ Проблéмы: жильё, стóимость, безопáсность / housing, costs, safety</li>
+                <li>✓ 36% не говоря́т по-англи́йски / don't speak English</li>
               </ul>
             </div>
-            <div className="en mt-1">
-              Registered? Do you know your poll site address? Will you vote on Election Day, early, or by mail?
-            </div>
-            <div className="mt-2 text-sm text-slate-600">
-              Важно: даты/адреса зачитывайте с официальных страниц:
-            </div>
-            <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
-              <a className="inline-flex items-center justify-center rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold hover:bg-slate-100"
-                 href={LINKS.vote} target="_blank" rel="noreferrer">
-                vote.nyc
-              </a>
-              <a className="inline-flex items-center justify-center rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold hover:bg-slate-100"
-                 href={LINKS.register} target="_blank" rel="noreferrer">
-                e-register
-              </a>
-              <a className="inline-flex items-center justify-center rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold hover:bg-slate-100"
-                 href={LINKS.absentee} target="_blank" rel="noreferrer">
-                absentee
-              </a>
-              <a className="inline-flex items-center justify-center rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold hover:bg-slate-100"
-                 href={LINKS.earlymail} target="_blank" rel="noreferrer">
-                early mail
-              </a>
-            </div>
-            <div className="mt-3">
-              <Btn onClick={() => go("ask")}>Дальше</Btn>
-            </div>
-          </Node>
 
-          {/* 6 Supporter ask */}
-          <Node id="ask" activeId={active}>
-            <h2 className="ru text-base font-semibold">6) Предложение для сторонников</h2>
-            <LangLine
-              ru="Хотите присоединиться к нашей волонтёрской команде? Мы сообщим о ближайших выходах в Южном Бруклине."
-              en="Would you like to join our volunteer team? We will update you on the next canvass in South Brooklyn."
-              className="mt-1"
+            <div className="bg-white p-5 sm:p-6 rounded-lg shadow-md border-l-4 border-zohran-orange">
+              <h3 className="font-bold text-lg sm:text-xl mb-3 text-zohran-blue">Key Messages / Ключевые сообщения</h3>
+              <ul className="space-y-2 text-black text-base sm:text-lg">
+                <li>🏠 Замóрозка арéнды / Rent freeze</li>
+                <li>👶 Бесплáтный детсáд / Free childcare (6 weeks-5 years)</li>
+                <li>💰 Повыше́ние минима́льной почасово́й опла́ты до $30 к 2030 / $30 minimum wage by 2030</li>
+                <li>🏗️ 200,000 досту́пных кварти́р / affordable apartments</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (activeSection === 'priorities') {
+      return (
+        <div className="space-y-4">
+          {searchTerm && (
+            <div className="bg-white border-2 border-zohran-orange p-4 rounded mb-4">
+              <p className="text-black font-medium">Showing results for "{searchTerm}"</p>
+            </div>
+          )}
+          <h2 className="text-2xl sm:text-3xl font-bold text-zohran-blue mb-4">Key Priorities</h2>
+          {priorities.map((item, idx) => (
+            <div key={idx} className="bg-white p-5 sm:p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+              <h3 className="font-bold text-lg sm:text-xl text-zohran-blue mb-3">{item.title}</h3>
+              <div className="space-y-3">
+                <div className="bg-white p-4 rounded border-2 border-zohran-blue">
+                  <p className="text-black font-medium text-base sm:text-lg">{item.russian}</p>
+                </div>
+                <p className="text-black italic text-sm sm:text-base">{item.english}</p>
+                {item.pronunciation && (
+                  <p className="text-zohran-blue text-sm">🔊 {item.pronunciation}</p>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    if (activeSection === 'questions') {
+      return (
+        <div className="space-y-4">
+          {searchTerm && (
+            <div className="bg-white border-l-4 border-zohran-orange p-4 rounded mb-4">
+              <p className="text-black">Showing results for "{searchTerm}"</p>
+            </div>
+          )}
+          <h2 className="text-2xl sm:text-3xl font-bold text-zohran-blue mb-4">Persuasion Questions</h2>
+          <div className="bg-white p-5 sm:p-6 rounded-lg shadow-md border-2 border-zohran-blue mb-6">
+            <p className="text-black font-medium text-sm sm:text-base">
+              Questions to help voters see voting for Mamdani serves their interests, and that Trump's fear-mongering works against them.
+            </p>
+          </div>
+          {persuasionQuestions.map((q, idx) => (
+            <div key={idx} className="bg-white p-5 sm:p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+              <div className="bg-zohran-orange px-3 py-1.5 rounded-full inline-block mb-3">
+                <span className="text-white font-semibold text-sm sm:text-base">{q.category}</span>
+              </div>
+              <div className="space-y-3">
+                <div className="bg-white p-4 rounded border-2 border-zohran-blue">
+                  <p className="text-black font-medium mb-2 text-base sm:text-lg">{q.russian}</p>
+                  <p className="text-black italic text-sm sm:text-base">{q.english}</p>
+                  {q.pronunciation && (
+                    <p className="text-zohran-blue font-medium text-sm mt-2">🔊 {q.pronunciation}</p>
+                  )}
+                </div>
+                {q.followup && (
+                  <div className="bg-white p-3 sm:p-4 rounded border-2 border-zohran-orange">
+                    <p className="text-black font-medium text-sm sm:text-base">
+                      <span className="text-zohran-orange font-bold">Follow-up:</span> {q.followup}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    if (activeSection === 'affinity') {
+      return (
+        <div className="space-y-4 sm:space-y-6">
+          {searchTerm && (
+            <div className="bg-white border-l-4 border-zohran-orange p-4 rounded mb-4">
+              <p className="text-black">Showing results for "{searchTerm}"</p>
+            </div>
+          )}
+          <h2 className="text-2xl sm:text-3xl font-bold text-zohran-blue mb-4">Identity-Based Persuasion</h2>
+          <p className="text-black bg-white p-4 sm:p-5 rounded-lg border-2 border-zohran-blue text-base sm:text-lg font-medium">
+            Tailored talking points for specific community groups in Brighton Beach
+          </p>
+          {affinityGroups.map((group, idx) => (
+            <div key={idx} className="bg-white p-5 sm:p-6 rounded-lg shadow-md border-t-4 border-zohran-orange">
+              <h3 className="font-bold text-xl sm:text-2xl text-zohran-blue mb-4">{group.group}</h3>
+              <div className="space-y-4">
+                {group.points.map((point, pidx) => (
+                  <div key={pidx} className="bg-white p-4 sm:p-5 rounded-lg border border-gray-300">
+                    <div className="space-y-2">
+                      <p className="text-black font-medium leading-relaxed text-base sm:text-lg">{point.russian}</p>
+                      <p className="text-black italic text-sm sm:text-base leading-relaxed">{point.english}</p>
+                      {point.pronunciation && (
+                        <p className="text-zohran-blue font-medium text-sm">🔊 {point.pronunciation}</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    if (activeSection === 'platform') {
+      return (
+        <div className="space-y-4">
+          {searchTerm && (
+            <div className="bg-white border-l-4 border-zohran-orange p-4 rounded mb-4">
+              <p className="text-black">Showing results for "{searchTerm}"</p>
+            </div>
+          )}
+          <h2 className="text-2xl sm:text-3xl font-bold text-zohran-blue mb-4">Zohran's Platform</h2>
+          <p className="text-black mb-4 text-base sm:text-lg font-medium">He will... / Он...</p>
+          {platform.map((item, idx) => (
+            <div key={idx} className="bg-white p-5 sm:p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow border-l-4 border-zohran-orange">
+              <h3 className="font-bold text-black mb-2 text-base sm:text-lg">✓ {item.title}</h3>
+              <div className="space-y-2">
+                <p className="text-black text-base sm:text-lg">{item.russian}</p>
+                <p className="text-black italic text-sm sm:text-base">{item.english}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    if (activeSection === 'concerns') {
+      return (
+        <div className="space-y-4">
+          {searchTerm && (
+            <div className="bg-white border-l-4 border-zohran-orange p-4 rounded mb-4">
+              <p className="text-black">Showing results for "{searchTerm}"</p>
+            </div>
+          )}
+          <h2 className="text-2xl sm:text-3xl font-bold text-zohran-blue mb-4">Addressing Concerns</h2>
+          <div className="bg-white p-5 sm:p-6 rounded-lg shadow-md border-2 border-zohran-red mb-6">
+            <p className="text-black font-medium text-sm sm:text-base">
+              Common concerns from Russian-speaking voters and how to address them effectively. These responses acknowledge their experiences while explaining the differences.
+            </p>
+          </div>
+          {concerns.map((item, idx) => (
+            <div key={idx} className="bg-white p-5 sm:p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow border-l-4 border-zohran-red">
+              <h3 className="font-bold text-lg sm:text-xl text-zohran-red mb-3">⚠️ {item.title}</h3>
+              <div className="space-y-3">
+                <div className="bg-white p-4 rounded border-2 border-zohran-red">
+                  <p className="text-black leading-relaxed text-base sm:text-lg">{item.russian}</p>
+                </div>
+                <p className="text-black italic text-sm sm:text-base leading-relaxed">{item.english}</p>
+                {item.pronunciation && (
+                  <p className="text-zohran-blue font-medium text-sm">🔊 {item.pronunciation}</p>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    if (activeSection === 'cuomo') {
+      return (
+        <div className="space-y-4">
+          {searchTerm && (
+            <div className="bg-white border-l-4 border-zohran-orange p-4 rounded mb-4">
+              <p className="text-black">Showing results for "{searchTerm}"</p>
+            </div>
+          )}
+          <h2 className="text-2xl sm:text-3xl font-bold text-zohran-blue mb-4">About Cuomo</h2>
+          <div className="bg-white border-2 border-zohran-red p-4 sm:p-5 rounded mb-4">
+            <p className="text-zohran-red font-bold text-base sm:text-lg">
+              ⚠️ Important information about the main opponent
+            </p>
+          </div>
+          {cuomoPoints.map((item, idx) => (
+            <div key={idx} className="bg-white p-5 sm:p-6 rounded-lg shadow-md">
+              <div className="space-y-2">
+                <p className="text-black font-medium text-base sm:text-lg">{item.russian}</p>
+                <p className="text-black italic text-sm sm:text-base">{item.english}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    if (activeSection === 'additional') {
+      return (
+        <div className="space-y-4">
+          {searchTerm && (
+            <div className="bg-white border-l-4 border-zohran-orange p-4 rounded mb-4">
+              <p className="text-black">Showing results for "{searchTerm}"</p>
+            </div>
+          )}
+          <h2 className="text-2xl sm:text-3xl font-bold text-zohran-blue mb-4">Brighton Beach Area Report</h2>
+          
+          <div className="bg-zohran-orange text-white p-5 sm:p-6 rounded-lg shadow-lg">
+            <h3 className="font-bold text-lg sm:text-xl mb-3">🎯 The Brighton Beach Paradox</h3>
+            <p className="leading-relaxed mb-2 text-base sm:text-lg">
+              Zohran won Brighton Beach — a neighborhood that voted 75-90% for Trump in 2024.
+            </p>
+            <p className="text-white opacity-90 text-sm sm:text-base">
+              How? Uzbek, Tajik, and Pakistani Muslims overcame Russian-speaking Jewish opposition.
+            </p>
+          </div>
+
+          <div className="bg-white p-5 sm:p-6 rounded-lg shadow-md border-l-4 border-zohran-blue">
+            <h3 className="font-bold text-lg sm:text-xl text-zohran-blue mb-3">📊 Quick Stats</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm sm:text-base">
+              <div className="bg-gray-50 p-3 sm:p-4 rounded">
+                <p className="font-semibold text-black">Russian speakers:</p>
+                <p className="text-black">121,607 in Brooklyn</p>
+              </div>
+              <div className="bg-gray-50 p-3 sm:p-4 rounded">
+                <p className="font-semibold text-black">Typical vote:</p>
+                <p className="text-black">70-80% Republican</p>
+              </div>
+              <div className="bg-gray-50 p-3 sm:p-4 rounded">
+                <p className="font-semibold text-black">Don't speak English:</p>
+                <p className="text-black">36%</p>
+              </div>
+              <div className="bg-gray-50 p-3 sm:p-4 rounded">
+                <p className="font-semibold text-black">Median age:</p>
+                <p className="text-black">47.9 years</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-5 sm:p-6 rounded-lg shadow-md border-2 border-zohran-orange">
+            <h3 className="font-bold text-lg sm:text-xl text-black mb-3">🔑 How Zohran Won Brighton Beach</h3>
+            <div className="space-y-3 text-sm sm:text-base">
+              <div className="bg-white p-3 sm:p-4 rounded">
+                <p className="font-semibold text-black mb-1">Most Russian Jews couldn't vote against him</p>
+                <p className="text-black">They're registered Republicans. Only Democrats vote in Dem primary.</p>
+              </div>
+              <div className="bg-white p-3 sm:p-4 rounded">
+                <p className="font-semibold text-black mb-1">Central Asian Muslims turned out in force</p>
+                <p className="text-black">Uzbeks, Tajiks, Kazakhs, Kyrgyz — registered Democrats, voted for "their guy"</p>
+              </div>
+              <div className="bg-white p-3 sm:p-4 rounded">
+                <p className="font-semibold text-black mb-1">Palestine position was decisive</p>
+                <p className="text-black">Many voted for him not because he's socialist, but because he's pro-Palestine</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-5 sm:p-6 rounded-lg shadow-md border-2 border-zohran-red">
+            <h3 className="font-bold text-lg sm:text-xl text-zohran-red mb-3">⚠️ Opposition Voices You'll Hear</h3>
+            <div className="space-y-4 text-sm sm:text-base">
+              <div className="bg-white p-4 sm:p-5 rounded-lg">
+                <p className="font-semibold text-zohran-red mb-2">Inna Vernikov (City Council, Brighton Beach):</p>
+                <p className="text-black italic mb-2">"I grew up under communism. I know what 'government-run grocery stores' lead to: bread lines, devastation, no choice."</p>
+                <p className="text-black text-sm">She won her Republican primary decisively — her anti-socialist message resonates strongly.</p>
+              </div>
+              <div className="bg-white p-4 sm:p-5 rounded-lg">
+                <p className="font-semibold text-zohran-red mb-2">Gregory Lyakhov (Columnist, child of Soviet immigrants):</p>
+                <p className="text-black italic mb-2">"My grandparents stood in lines for hours for bread. Will I have to flee my own city?"</p>
+                <p className="text-black text-sm">Wrote multiple op-eds: "My Parents Stood in the Breadlines Mamdani Wants to Bring to NYC"</p>
+              </div>
+              <div className="bg-white p-4 sm:p-5 rounded-lg">
+                <p className="font-semibold text-zohran-red mb-2">Brighton Beach News (Russian-language paper):</p>
+                <p className="text-black italic">"Never has America's most Jewish city been so close to falling into hands of convinced antisemite."</p>
+              </div>
+            </div>
+            <div className="bg-zohran-red text-white p-3 sm:p-4 rounded mt-4">
+              <p className="font-medium text-sm sm:text-base">
+                These voices represent genuine Soviet trauma — acknowledge it, don't dismiss it
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-white p-5 sm:p-6 rounded-lg shadow-md border-2 border-zohran-blue">
+            <h3 className="font-bold text-lg sm:text-xl text-zohran-blue mb-3">🎤 Assembly Member Mikhail Novakhov Explains</h3>
+            <p className="text-black text-sm sm:text-base mb-3 italic">Interview with Novaya Gazeta, July 11, 2025</p>
+            
+            <div className="space-y-3 text-sm sm:text-base">
+              <div className="bg-white p-3 sm:p-4 rounded">
+                <p className="font-semibold text-zohran-blue mb-1">On why Russian-speakers couldn't stop him:</p>
+                <p className="text-black">"Significant portion of Russian-speaking population are registered Republicans. With all their desire, they simply couldn't participate in voting for Democratic candidate."</p>
+              </div>
+
+              <div className="bg-white p-3 sm:p-4 rounded">
+                <p className="font-semibold text-zohran-blue mb-1">On Muslim voters:</p>
+                <p className="text-black">"Brighton Beach has fairly large Muslim population — immigrants from Pakistan, Palestine, Jordan. For them, he is 'their guy,' and his leftist views recede into background."</p>
+              </div>
+
+              <div className="bg-white p-3 sm:p-4 rounded">
+                <p className="font-semibold text-zohran-blue mb-1">What poll workers saw:</p>
+                <p className="text-black">"They told me: 'Misha, many people coming to vote.' By appearance, by language, it was clear who these voters were. Very many came to vote specifically for Mamdani."</p>
+              </div>
+
+              <div className="bg-white p-3 sm:p-4 rounded">
+                <p className="font-semibold text-zohran-blue mb-1">On the Palestine factor:</p>
+                <p className="text-black">"Significant part voted for Mamdani not because he's socialist, but because he's perceived as 'their own' — sympathizing with Palestine, criticizing Israel. This was decisive factor."</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-5 sm:p-6 rounded-lg shadow-md border-2 border-zohran-blue">
+            <h3 className="font-bold text-lg sm:text-xl text-zohran-blue mb-3">🌏 Central Asian Communities</h3>
+            <p className="text-black text-sm sm:text-base mb-3">Uzbeks, Tajiks, Kazakhs, Kyrgyz — the quiet majority that decided Brighton Beach</p>
+            
+            <div className="space-y-3 text-sm sm:text-base">
+              <div className="bg-white p-3 sm:p-4 rounded">
+                <p className="font-semibold text-zohran-blue mb-1">Why they came to Brighton Beach:</p>
+                <p className="text-black">"Russian language still binds them together" — they speak Russian from Soviet times, but are predominantly Muslim</p>
+              </div>
+
+              <div className="bg-white p-3 sm:p-4 rounded">
+                <p className="font-semibold text-zohran-blue mb-1">What matters to them:</p>
+                <ul className="text-black space-y-1 ml-4">
+                  <li>• First Muslim mayor = historic representation</li>
+                  <li>• Zohran campaigned in Uzbek language</li>
+                  <li>• Pro-Palestine position resonates deeply</li>
+                  <li>• Economic policies help working families</li>
+                </ul>
+              </div>
+
+              <div className="bg-white p-3 sm:p-4 rounded">
+                <p className="font-semibold text-zohran-blue mb-1">Brighton Beach today:</p>
+                <p className="text-black">"No longer just Odessa. Now Uzbeks, Kyrgyz, Kazakhs, Tajiks." — hosts Central Asian Nowruz celebrations</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-5 sm:p-6 rounded-lg shadow-md border-2 border-zohran-orange">
+            <h3 className="font-bold text-lg sm:text-xl text-zohran-orange mb-3">😰 What Russian-Speaking Jews Fear</h3>
+            
+            <div className="space-y-3 text-sm sm:text-base">
+              <div className="bg-white p-3 sm:p-4 rounded border border-gray-300">
+                <p className="font-semibold text-black mb-2">1. Soviet Trauma: "We've seen this before"</p>
+                <p className="text-black mb-2">Government control of economy = Soviet shortages</p>
+                <p className="text-black text-sm italic">Trigger policies: Rent freeze, city grocery stores, $30 min wage, wealth redistribution</p>
+              </div>
+
+              <div className="bg-white p-3 sm:p-4 rounded border border-gray-300">
+                <p className="font-semibold text-black mb-2">2. Israel/Palestine: "Antisemite"</p>
+                <p className="text-black mb-2">Zohran's positions seen as threatening Jewish safety</p>
+                <p className="text-black text-sm italic">Concerns: BDS support, calling Gaza "genocide," would arrest Netanyahu</p>
+              </div>
+
+              <div className="bg-white p-3 sm:p-4 rounded border border-gray-300">
+                <p className="font-semibold text-black mb-2">3. Cultural Anxiety: "America will change"</p>
+                <p className="text-black">Sanctuary city policies, Muslim identity, Qatar conspiracy theories</p>
+              </div>
+            </div>
+
+            <div className="bg-zohran-orange text-white p-3 sm:p-4 rounded mt-4">
+              <p className="font-medium text-sm">
+                Common phrases: "I lived under communism" • "Bread lines" • "Government grocery stores" • "We ran away from socialism"
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-white p-5 sm:p-6 rounded-lg shadow-md border-l-4 border-zohran-blue">
+            <h3 className="font-bold text-lg sm:text-xl text-zohran-blue mb-3">🗳️ Actual Voting Results</h3>
+            
+            <div className="space-y-3 text-sm sm:text-base">
+              <div className="bg-white p-3 sm:p-4 rounded">
+                <p className="font-semibold text-zohran-blue mb-2">Where Zohran WON:</p>
+                <ul className="text-black space-y-1">
+                  <li>• Brighton Beach (Muslim voters)</li>
+                  <li>• Chinatown: +28 points</li>
+                  <li>• Jackson Heights (Bangladeshi): +26</li>
+                  <li>• Sunset Park (Chinese): +37</li>
+                  <li>• Woodside: +34</li>
+                  <li>• 5 of 6 majority-Asian neighborhoods</li>
+                </ul>
+              </div>
+
+              <div className="bg-white p-3 sm:p-4 rounded">
+                <p className="font-semibold text-zohran-red mb-2">Where Cuomo WON:</p>
+                <ul className="text-black space-y-1">
+                  <li>• Sheepshead Bay</li>
+                  <li>• Manhattan Beach</li>
+                  <li>• Midwood/Borough Park: 78%</li>
+                  <li>• (All heavily Russian-Jewish areas)</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="bg-zohran-blue text-white p-3 sm:p-4 rounded mt-4">
+              <p className="font-medium text-sm sm:text-base">
+                📊 Overall: Zohran won primary by 12 points with coalition of working-class immigrants, South Asians, Muslims, progressive voters
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-white p-5 sm:p-6 rounded-lg shadow-md border-2 border-zohran-blue">
+            <h3 className="font-bold text-lg sm:text-xl text-zohran-blue mb-3">💪 Your Canvassing Strategy</h3>
+            
+            <div className="space-y-3 text-sm sm:text-base">
+              <div className="bg-white p-4 sm:p-5 rounded">
+                <p className="font-semibold text-zohran-blue mb-2">✓ DO:</p>
+                <ul className="text-black space-y-1 ml-4">
+                  <li>• Lead with economics: rent freeze, free childcare, $30 wage</li>
+                  <li>• Use crime data: murders -34%, shootings -23%</li>
+                  <li>• Acknowledge Soviet trauma, then explain differences</li>
+                  <li>• Point to Trump-Cuomo connection</li>
+                  <li>• Ask about their grandchildren's future</li>
+                  <li>• Listen more than you talk</li>
+                </ul>
+              </div>
+
+              <div className="bg-white p-4 sm:p-5 rounded">
+                <p className="font-semibold text-zohran-red mb-2">✗ DON'T:</p>
+                <ul className="text-black space-y-1 ml-4">
+                  <li>• Say "socialism" unless they bring it up</li>
+                  <li>• Dismiss their Soviet experiences</li>
+                  <li>• Argue about Israel/Palestine extensively</li>
+                  <li>• Get into long ideological debates</li>
+                  <li>• Assume all Russian-speakers think alike</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-5 sm:p-6 rounded-lg shadow-md border-2 border-zohran-orange">
+            <h3 className="font-bold text-lg sm:text-xl text-zohran-orange mb-3">🗣️ Key Phrases That Work</h3>
+            
+            <div className="space-y-2 text-sm sm:text-base">
+              <div className="bg-white p-3 rounded border border-gray-300">
+                <p className="text-black font-medium">"Who's robbing you now — government or your landlord?"</p>
+              </div>
+              <div className="bg-white p-3 rounded border border-gray-300">
+                <p className="text-black font-medium">"Cuomo won't freeze rent — it goes up 5% next year"</p>
+              </div>
+              <div className="bg-white p-3 rounded border border-gray-300">
+                <p className="text-black font-medium">"Trump prefers Cuomo — they can make deals together"</p>
+              </div>
+              <div className="bg-white p-3 rounded border border-gray-300">
+                <p className="text-black font-medium">"France, Germany, Japan — capitalist with free childcare"</p>
+              </div>
+              <div className="bg-white p-3 rounded border border-gray-300">
+                <p className="text-black font-medium">"Will your grandchildren afford to stay here?"</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gray-100 p-5 sm:p-6 rounded-lg shadow-md border-l-4 border-gray-400">
+            <h3 className="font-bold text-lg sm:text-xl text-black mb-3">❓ The Missing Voices</h3>
+            <p className="text-black text-sm sm:text-base mb-3">Important communities we have limited data on:</p>
+            
+            <div className="space-y-3 text-sm sm:text-base">
+              <div className="bg-white p-3 sm:p-4 rounded">
+                <p className="font-semibold text-black mb-1">Ukrainians (80,000 in NYC):</p>
+                <p className="text-black">Almost no coverage found. Zohran said he'd arrest Putin — but no Ukrainian response documented.</p>
+              </div>
+              
+              <div className="bg-white p-3 sm:p-4 rounded">
+                <p className="font-semibold text-black mb-1">Georgians & Armenians:</p>
+                <p className="text-black">No specific coverage. Likely align with Russian-Jewish community on socialism fears.</p>
+              </div>
+            </div>
+
+            <div className="bg-gray-200 p-3 sm:p-4 rounded mt-4">
+              <p className="text-black text-sm">
+                💡 Why? Discussions happen in closed Telegram/WhatsApp groups, not public forums. Russian-language politics is mostly invisible to English researchers.
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-zohran-red text-white p-5 sm:p-6 rounded-lg shadow-lg">
+            <h3 className="font-bold text-lg sm:text-xl mb-3">🚨 Critical Reminders</h3>
+            <ul className="space-y-2 text-sm sm:text-base">
+              <li>• This community is NOT monolithic — Jews ≠ Muslims ≠ Ukrainians</li>
+              <li>• Brighton Beach transformed: not just "Little Odessa" anymore</li>
+              <li>• Trump got 75-90% here in 2024, but Zohran still won primary</li>
+              <li>• When trauma is too deep, respect it and move on</li>
+              <li>• Your safety comes first — leave if hostile</li>
+              <li>• You're part of 50,000-volunteer army that won the primary</li>
+            </ul>
+          </div>
+
+          <div className="bg-white p-5 sm:p-6 rounded-lg shadow-md border-l-4 border-zohran-blue">
+            <h3 className="font-bold text-lg sm:text-xl text-zohran-blue mb-4">📚 Sources & Further Reading</h3>
+            <div className="space-y-4 text-sm sm:text-base">
+              <div>
+                <p className="font-semibold text-black mb-2">Campaign & Results:</p>
+                <ul className="space-y-1 text-zohran-blue">
+                  <li>• <a href="https://www.zohranfornyc.com/" target="_blank" rel="noopener noreferrer" className="hover:underline">Zohran for NYC - Official Campaign</a></li>
+                  <li>• <a href="https://en.wikipedia.org/wiki/2025_New_York_City_Democratic_mayoral_primary" target="_blank" rel="noopener noreferrer" className="hover:underline">2025 NYC Democratic Primary</a></li>
+                  <li>• <a href="https://www.bloomberg.com/graphics/2025-mamdani-nyc-voters/" target="_blank" rel="noopener noreferrer" className="hover:underline">Bloomberg: Who Voted for Mamdani?</a></li>
+                </ul>
+              </div>
+
+              <div>
+                <p className="font-semibold text-black mb-2">Community Analysis:</p>
+                <ul className="space-y-1 text-zohran-blue">
+                  <li>• <a href="https://forward.com/" target="_blank" rel="noopener noreferrer" className="hover:underline">The Forward - Jewish Community</a></li>
+                  <li>• <a href="https://www.tabletmag.com/" target="_blank" rel="noopener noreferrer" className="hover:underline">Tablet Magazine</a></li>
+                  <li>• <a href="https://www.aljazeera.com/economy/2025/7/17/how-zohran-mamdani-reached-a-multilingual-multicultural-new-york" target="_blank" rel="noopener noreferrer" className="hover:underline">Al Jazeera: Multilingual Campaign</a></li>
+                </ul>
+              </div>
+
+              <div>
+                <p className="font-semibold text-black mb-2">Russian-Language Media:</p>
+                <ul className="space-y-1 text-zohran-blue">
+                  <li>• <a href="https://www.brightonbeachnews.com/" target="_blank" rel="noopener noreferrer" className="hover:underline">Brighton Beach News</a></li>
+                  <li>• <a href="https://novayagazeta.eu/" target="_blank" rel="noopener noreferrer" className="hover:underline">Novaya Gazeta</a></li>
+                  <li>• <a href="https://meduza.io/" target="_blank" rel="noopener noreferrer" className="hover:underline">Meduza</a></li>
+                </ul>
+              </div>
+
+              <div>
+                <p className="font-semibold text-black mb-2">Opposition Voices:</p>
+                <ul className="space-y-1 text-zohran-blue">
+                  <li>• <a href="https://www.thegatewaypundit.com/2025/07/my-parents-stood-breadlines-mamdani-wants-bring-nyc/" target="_blank" rel="noopener noreferrer" className="hover:underline">Gateway Pundit: Lyakhov on Breadlines</a></li>
+                  <li>• <a href="https://townhall.com/columnists/gregory-lyakhov/2025/07/22/zohran-mamdanis-agenda-hurts-nycs-kids-n2660726" target="_blank" rel="noopener noreferrer" className="hover:underline">Townhall: Mamdani's Agenda</a></li>
+                  <li>• <a href="https://council.nyc.gov/district-48/" target="_blank" rel="noopener noreferrer" className="hover:underline">Inna Vernikov - NYC Council</a></li>
+                </ul>
+              </div>
+
+              <div className="bg-white border border-zohran-blue p-4 rounded mt-4">
+                <p className="text-black text-sm">
+                  <strong>Research Note:</strong> This guide synthesizes public statements, news coverage, and voting analysis from April-September 2025. Russian-language discussions largely occur in closed Telegram/WhatsApp groups.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="bg-zohran-blue text-white shadow-lg sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-4 py-4 sm:py-5">
+          <div className="flex items-center justify-between">
+            <button
+              onClick={() => {
+                setActiveSection('home');
+                setSearchTerm('');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="text-left hover:opacity-80 transition-opacity"
+            >
+              <h1 className="text-xl sm:text-2xl font-bold text-white">ZOHRAN</h1>
+              <p className="text-white opacity-90 text-sm sm:text-base">for Brighton Beach</p>
+            </button>
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="lg:hidden p-2 sm:p-3 hover:bg-blue-700 active:bg-blue-800 rounded-lg transition-colors touch-manipulation"
+              aria-label="Toggle menu"
+            >
+              {menuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
+          
+          <div className="mt-3 sm:mt-4 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white opacity-70" size={20} />
+            <input
+              type="text"
+              placeholder="Search all content..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 sm:py-2.5 rounded-lg bg-white bg-opacity-20 text-white placeholder-white placeholder-opacity-70 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 text-sm sm:text-base"
             />
-            <div className="mt-3 flex flex-wrap gap-2">
-              <Btn variant="outline" onClick={() => go("details")}>Оставить контакты</Btn>
-              <Btn variant="outline" onClick={() => go("wrap")}>Пропустить</Btn>
+          </div>
+        </div>
+      </div>
+
+      {menuOpen && (
+        <div 
+          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+          onClick={() => setMenuOpen(false)}
+        />
+      )}
+
+      <div className="max-w-6xl mx-auto px-4 py-4 sm:py-6">
+        <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
+          <div 
+            className={`
+              lg:w-64 
+              ${menuOpen 
+                ? 'fixed inset-y-0 left-0 w-80 bg-white shadow-2xl z-50 overflow-y-auto pt-20 px-4 pb-4' 
+                : 'hidden lg:block'
+              }
+            `}
+          >
+            <div className="space-y-2 lg:sticky lg:top-24">
+              {Object.entries(sections).map(([key, section]) => (
+                <NavButton key={key} sectionKey={key} section={section} />
+              ))}
             </div>
-          </Node>
+          </div>
 
-          {/* 7 Details */}
-          <Node id="details" activeId={active}>
-            <h2 className="ru text-base font-semibold">7) Контакты (с согласия)</h2>
-            <LangLine
-              ru="Добавьте номер телефона и email во вкладке Details в MiniVAN."
-              en="Add phone and email under Details in MiniVAN (with consent)."
-              className="mt-1"
-            />
-            <div className="mt-3">
-              <Btn onClick={() => go("wrap")}>Завершить</Btn>
-            </div>
-          </Node>
-
-          {/* Wrap nodes */}
-          <Node id="wrap_no" activeId={active}>
-            <h2 className="ru text-base font-semibold">Завершение</h2>
-            <LangLine ru="Спасибо за время!" en="Thanks for your time!" className="mt-1" />
-          </Node>
-
-          <Node id="wrap" activeId={active}>
-            <h2 className="ru text-base font-semibold">Завершение</h2>
-            <LangLine ru="Спасибо!" en="Thanks!" className="mt-1" />
-          </Node>
-        </section>
-
-        <footer className="mt-6 text-center text-xs text-slate-500">
-          Read dates/addresses from official sites only. Single-page in React.
-        </footer>
-      </main>
-
-      {/* видимость языков через body-классы */}
-      <style>{`
-        .hidden-en .en { display: none; }
-        .hidden-ru .ru { display: none; }
-        @media print {
-          header { position: static !important; }
-          body { background: #fff; }
-        }
-      `}</style>
+          <div className="flex-1 lg:max-w-3xl">
+            {renderContent()}
+          </div>
+        </div>
+      </div>
     </div>
   );
-}
+};
+
+export default CanvassingApp;
