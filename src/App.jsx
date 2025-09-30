@@ -72,6 +72,13 @@ const CanvassingApp = () => {
       english: 'Do you know that NYC crime is at historic lows? Murders -34%, shootings -23%.',
       pronunciation: 'prestUPnost (crime), istoriCHEskom (historic), uBIYstva (murders)',
       followup: 'Трамп и Куóмо пуга́ют вас специа́льно. Дáнные доказы́вают — го́род безопáснее, чем был. (Trump and Cuomo are scaring you on purpose. Data proves — the city is safer than it was.)'
+    },
+    {
+      category: 'Richest City',
+      russian: 'Э́то са́мый бога́тый го́род в са́мой бога́той стране́ ми́ра за всю исто́рию челове́чества. Почему́ мы не мо́жем позво́лить себе́ бесплáтный де́тский сад, когда́ Фра́нция и Герма́ния мо́гут?',
+      english: 'This is the richest city in the richest country in the history of the world. Why can\'t we afford free childcare when France and Germany can?',
+      pronunciation: 'boGAty (rich), pozVOlit (afford), cheloVEchestva (humanity)',
+      followup: 'Де́нег доста́точно. Вопро́с в том, что мы приоритизи́руем — по́мощь рабо́чим лю́дям и́ли нало́говые льго́ты для миллиарде́ров? (There\'s enough money. The question is what we prioritize — helping working people or tax breaks for billionaires?)'
     }
   ];
 
@@ -120,6 +127,11 @@ const CanvassingApp = () => {
       english: 'Freeze the rent for rent-stabilized tenants'
     },
     {
+      title: 'Raise minimum wage',
+      russian: 'Повы́сит минима́льную почасову́ю опла́ту до $30 к 2030 го́ду',
+      english: 'Raise the minimum wage to $30/hour by 2030'
+    },
+    {
       title: 'Affordable housing',
       russian: 'Постро́ит 200,000 кварти́р с досту́пной аре́ндой',
       english: 'Build 200,000 affordable apartments'
@@ -143,24 +155,28 @@ const CanvassingApp = () => {
 
   const concerns = [
     {
-      title: 'Safety',
-      russian: 'Я то́же хочу́ жить в безопáсном го́роде. Зохра́н созда́ст но́вый отде́л безопáсности — он бу́дет вклады́вать в психи́ческое здоро́вье, де́лать у́лицы и метро́ безопáснее, сокраща́ть бездо́мность, предотвраща́ть вооружённое наси́лие.',
-      english: 'I also want to live in a safe city. Zohran will create a new department focused on safety - he will invest in mental health, making streets and subways safer, reducing homelessness, and preventing gun violence.'
+      title: 'Safety / Безопасность',
+      russian: 'Я то́же хочу́ жить в безопáсном го́роде. Зохра́н созда́ст но́вый отде́л безопáсности — он бу́дет вклады́вать в психи́ческое здоро́вье, де́лать у́лицы и метро́ безопáснее, сокраща́ть бездо́мность, предотвраща́ть вооружённое наси́лие. Он не про́тив поли́ции, он про́тив того́, что́бы поли́ция — вме́сто того́, что́бы лови́ть реа́льных престу́пников — вози́лась с те́ми, у кого́ психологи́ческие пробле́мы. И́менно поэ́тому он создаёт департа́мент обще́ственной безопа́сности, что́бы на вы́зовы к лю́дям с психи́ческими пробле́мами приезжа́ли социа́льные рабо́тники и подгото́вленные специали́сты, кото́рые мо́гут им помо́чь. Ина́че мы никогда́ не реши́м э́ту пробле́му.',
+      english: 'I also want to live in a safe city. Zohran will create a new public safety department that will invest in mental health, make streets and subways safer, reduce homelessness, and prevent gun violence. He\'s not against police — he\'s against police having to deal with mental health crises instead of catching real criminals. That\'s why he\'s creating a public safety department, so that calls involving people with mental health issues are handled by social workers and trained specialists who can actually help them. Otherwise we\'ll never solve this problem.',
+      pronunciation: 'bezoPASnost (safety), prestUPnikov (criminals), psikholoGIcheskie (psychological)'
     },
     {
-      title: 'Claims of anti-Semitism',
-      russian: 'Зохра́н — не антисеми́т. Он уважа́ет евре́йских ли́деров и рабо́тает с ни́ми по мно́гим вопро́сам. Он хо́чет, что́бы война́ зако́нчилась и изра́ильтяне с палести́нцами жи́ли ми́рно.',
-      english: 'Zohran is not anti-Semitic; he respects and works with Jewish leaders. He supports an end to the war where Israelis and Palestinians can live in peace.'
+      title: 'Claims of anti-Semitism / Обвинения в антисемитизме',
+      russian: 'Зохра́н — не антисеми́т. Он уважа́ет евре́йских ли́деров и рабо́тает с ни́ми по мно́гим вопро́сам. Он хо́чет, что́бы война́ зако́нчилась и изра́ильтяне с палести́нцами жи́ли ми́рно. Его́ поддéрживают мно́гие евре́и Нью-Йо́рка. Конгрессме́н Дже́рри На́длер, кото́рый представля́ет евре́йский о́круг и всю жизнь защища́л Изра́иль, откры́то поддержа́л Зохра́на. Э́то пока́зывает, что обвине́ния в антисемити́зме — э́то поли́тическая мани́пуляция.',
+      english: 'Zohran is not an antisemite. He respects Jewish leaders and works with them on many issues. He wants the war to end so Israelis and Palestinians can live in peace. Many New York Jews support him. Congressman Jerry Nadler, who represents a Jewish district and has defended Israel his whole life, openly endorsed Zohran. This shows that antisemitism accusations are political manipulation.',
+      pronunciation: 'antiseMIT, podDERzhivayut (support), maniPULyatsiya (manipulation)'
     },
     {
-      title: 'Communism/socialism concerns',
-      russian: 'Зохра́н — не коммуни́ст. «Демократи́ческий социали́зм» зна́чит: эконо́мика до́лжна рабо́тать для просты́х люде́й. Он не создаёт но́вый СССР. Он хо́чет, что́бы жизнь в Нью-Йо́рке была́ доступне́е.',
-      english: 'Zohran is not a communist. "Democratic Socialism" means: the economy should work for working people. He is not creating a new USSR. He wants to make life in NYC more affordable.'
+      title: 'Communism/socialism concerns / Страхи о коммунизме',
+      russian: 'Зохра́н — не коммуни́ст. «Демократи́ческий социали́зм» зна́чит: эконо́мика до́лжна рабо́тать для просты́х люде́й, кото́рые здесь живу́т и рабо́тают. Он не создаёт но́вый СССР. Он хо́чет, что́бы жизнь в Нью-Йо́рке была́ досту́пнее для просты́х люде́й. Во Фра́нции, Герма́нии, Япо́нии — капиталисти́ческих стра́нах — есть бесплáтный де́тский сад и медици́на. Э́то не коммуни́зм. Э́то забо́та о гра́жданах. Зохра́н хо́чет, что́бы Нью-Йо́рк рабо́тал для тех, кто здесь живёт, а не для миллиарде́ров.',
+      english: 'Zohran is not a communist. "Democratic Socialism" means: the economy should work for regular people who live and work here. He\'s not creating a new USSR. He wants to make NYC more affordable for working people. In France, Germany, Japan — capitalist countries — they have free childcare and healthcare. That\'s not communism. That\'s caring for citizens. Zohran wants New York to work for those who live here, not for billionaires.',
+      pronunciation: 'kommunIST, dostuPNEye (more affordable), milliardYOrov (billionaires)'
     },
     {
-      title: 'How will he pay for it?',
-      russian: 'Зохра́н возьмёт нало́ги с топ-1% — тех, кто зараба́тывает бо́льше миллио́на до́лларов в год. Не с рабо́чих люде́й. Е́сли уравня́ть корпорати́вный нало́г с у́ровнем Нью-Дже́рси, го́род полу́чит 5 миллиа́рдов до́лларов.',
-      english: 'Zohran will tax the top 1% — those making over $1 million a year. Not working class people. Just matching New Jersey\'s corporate tax rate would bring in $5 billion.'
+      title: 'How will we pay for it? / Как мы за это заплатим?',
+      russian: 'Когда́ говоря́т, что мы не мо́жем э́то позво́лить: «Э́то са́мый бога́тый го́род в са́мой бога́той стране́ ми́ра за всю исто́рию челове́чества. Вы понима́ете, что вы вообще́ говори́те? Де́нег доста́точно, вопро́с в том, как систе́ма вы́строена и что мы приоритизи́руем». Зохра́н возьмёт нало́ги с топ-1% — тех, кто зараба́тывает бо́льше миллио́на до́лларов в год. Не с рабо́чих люде́й. Е́сли уравня́ть корпорати́вный нало́г с у́ровнем Нью-Дже́рси, го́род полу́чит 5 миллиа́рдов до́лларов.',
+      english: 'When they say we can\'t afford it: "This is the richest city in the richest country in the history of the world. Do you understand what you\'re even saying? There\'s enough money, the question is how the system is structured and what we prioritize." Zohran will tax the top 1% — those making over $1 million a year. Not working people. Just matching New Jersey\'s corporate tax rate would bring in $5 billion.',
+      pronunciation: 'pozVOlit (afford), prioritiZIruyem (prioritize), milliARdov (billions)'
     }
   ];
 
@@ -364,7 +380,7 @@ const CanvassingApp = () => {
               <ul className="space-y-2 text-black text-base sm:text-lg">
                 <li>🏠 Замóрозка арéнды / Rent freeze</li>
                 <li>👶 Бесплáтный детсáд / Free childcare (6 weeks-5 years)</li>
-                <li>💰 $30 зарплáта к 2030 / $30 minimum wage by 2030</li>
+                <li>💰 Повыше́ние минима́льной почасово́й опла́ты до $30 к 2030 / $30 minimum wage by 2030</li>
                 <li>🏗️ 200,000 досту́пных кварти́р / affordable apartments</li>
               </ul>
             </div>
@@ -507,14 +523,22 @@ const CanvassingApp = () => {
             </div>
           )}
           <h2 className="text-2xl sm:text-3xl font-bold text-zohran-blue mb-4">Addressing Concerns</h2>
+          <div className="bg-white p-5 sm:p-6 rounded-lg shadow-md border-2 border-zohran-red mb-6">
+            <p className="text-black font-medium text-sm sm:text-base">
+              Common concerns from Russian-speaking voters and how to address them effectively. These responses acknowledge their experiences while explaining the differences.
+            </p>
+          </div>
           {concerns.map((item, idx) => (
-            <div key={idx} className="bg-white p-5 sm:p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+            <div key={idx} className="bg-white p-5 sm:p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow border-l-4 border-zohran-red">
               <h3 className="font-bold text-lg sm:text-xl text-zohran-red mb-3">⚠️ {item.title}</h3>
               <div className="space-y-3">
                 <div className="bg-white p-4 rounded border-2 border-zohran-red">
                   <p className="text-black leading-relaxed text-base sm:text-lg">{item.russian}</p>
                 </div>
                 <p className="text-black italic text-sm sm:text-base leading-relaxed">{item.english}</p>
+                {item.pronunciation && (
+                  <p className="text-zohran-blue font-medium text-sm">🔊 {item.pronunciation}</p>
+                )}
               </div>
             </div>
           ))}
