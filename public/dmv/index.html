@@ -152,8 +152,28 @@ var DMVParser = (function () {
   // Homophones accepted only as the last number word after "window" etc.
   var HOMOPHONES = { to: 2, too: 2, for: 4, fore: 4, won: 1, ate: 8 };
   var COUNTER_RE = /^(window|counter|station|booth|desk)s?$/;
+  // Ways the recognizer mishears "counter".
+  var COUNTER_FUZZY_RE = /^(en)?count(er|ers|ed|s)?$/;
+  // Two-letter words that must not be read as a letter pair like "CD".
+  var COMMON2 = { am: 1, an: 1, as: 1, at: 1, by: 1, do: 1, go: 1, he: 1, hi: 1, if: 1, in: 1, is: 1, it: 1,
+    me: 1, my: 1, no: 1, of: 1, ok: 1, on: 1, or: 1, so: 1, to: 1, up: 1, us: 1, we: 1, ah: 1, eh: 1, uh: 1,
+    um: 1, hm: 1, mm: 1, st: 1, nd: 1, rd: 1, th: 1, mr: 1, ms: 1, dr: 1, pm: 1, id: 1, tv: 1, ya: 1, yo: 1 };
   var TICKET_WORDS = { ticket: 1, number: 1, serving: 1, calling: 1, called: 1, next: 1, now: 1, customer: 1 };
-  var SKIP_AFTER_COUNTER = { number: 1, no: 1, num: 1 };
+  var SKIP_AFTER_COUNTER = { number: 1, no: 1, num: 1, her: 1 };
+
+  // Returns { text, weak } for a spoken or written letter (or letter pair), else null.
+  function letterOf(tok, second) {
+    if (second && (tok === 'oh' || tok === 'o')) return null;  // "C oh one" is C 01
+    if (tok in LETTERS) return { text: LETTERS[tok], weak: !!WEAK[tok] };
+    if (/^[a-z]{2}$/.test(tok) && !COMMON2[tok]) return { text: tok.toUpperCase(), weak: false };
+    return null;
+  }
+
+  function counterWord(tok) {
+    if (COUNTER_FUZZY_RE.test(tok)) return 'Counter';
+    var m = COUNTER_RE.exec(tok);
+    return m ? m[1].charAt(0).toUpperCase() + m[1].slice(1) : null;
+  }
 
   function tokenize(text) {
     var s = String(text || '').toLowerCase()
@@ -219,14 +239,13 @@ var DMVParser = (function () {
 
     // Counters first, so their numbers are never read as tickets.
     for (var i = 0; i < tokens.length; i++) {
-      var m = COUNTER_RE.exec(tokens[i]);
-      if (!m) continue;
+      var word = counterWord(tokens[i]);
+      if (!word) continue;
       hasContext = true;
       var k = i + 1;
       while (k < tokens.length && SKIP_AFTER_COUNTER[tokens[k]]) k++;
       var num = readNumber(tokens, k, used, { homophones: true });
       if (num && num.digits.length <= 3) {
-        var word = m[1].charAt(0).toUpperCase() + m[1].slice(1);
         counters.push({ start: i, word: word, number: num.digits, label: word + ' ' + num.digits });
         for (var x = i; x < num.end; x++) used[x] = true;
         i = num.end - 1;
@@ -237,20 +256,25 @@ var DMVParser = (function () {
     var ticket = null;
     for (var p = 0; p < tokens.length; p++) {
       if (used[p]) continue;
-      var tok = tokens[p];
-      var cand = null;
-      if (tok in LETTERS && (!WEAK[tok] || hasContext)) {
-        var n1 = readNumber(tokens, p + 1, used, { leadingOh: true });
-        if (n1 && n1.digits.length <= 4) cand = { letter: LETTERS[tok], digits: n1.digits, start: p, end: n1.end };
+      // Up to two letters ("CD", "C D", "see dee"), then a number.
+      var prefix = '';
+      var allWeak = true;
+      var q = p;
+      while (q < tokens.length && !used[q] && prefix.length < 2) {
+        var L = letterOf(tokens[q], prefix.length > 0);
+        if (!L || prefix.length + L.text.length > 2) break;
+        prefix += L.text;
+        if (!L.weak) allWeak = false;
+        q++;
       }
-      if (!cand && tok !== 'oh' && tok !== 'o') {
+      var cand = null;
+      if (prefix) {
+        var n1 = readNumber(tokens, q, used, { leadingOh: true });
+        if (n1 && n1.digits.length <= 4 && (!allWeak || hasContext)) cand = { letter: prefix, digits: n1.digits, end: n1.end };
+      } else if (tokens[p] !== 'oh' && tokens[p] !== 'o') {
         var n2 = readNumber(tokens, p, used, {});
-        if (n2) {
-          var ctx = false;
-          for (var b = Math.max(0, p - 3); b < p; b++) if (TICKET_WORDS[tokens[b]]) ctx = true;
-          if (ctx && n2.digits.length <= 4) cand = { letter: '', digits: n2.digits, start: p, end: n2.end };
-          else { p = n2.end - 1; continue; }
-        }
+        if (n2 && n2.digits.length <= 4) cand = { letter: '', digits: n2.digits, end: n2.end };
+        else if (n2) { p = n2.end - 1; continue; }
       }
       if (cand) { ticket = cand; p = cand.end - 1; }
     }
@@ -265,7 +289,8 @@ var DMVParser = (function () {
       }
     }
     return {
-      ticket: ticket ? ticket.letter + ticket.digits : null,
+      // Tickets are shown with three digits, like the printed ones: CD001.
+      ticket: ticket ? ticket.letter + ('00' + ticket.digits).slice(-Math.max(3, ticket.digits.length)) : null,
       counter: counter ? { word: counter.word, number: counter.number, label: counter.label } : null
     };
   }
@@ -390,7 +415,8 @@ if (typeof module !== 'undefined') module.exports = DMVParser;
         var res = e.results[i];
         var text = res[0] && res[0].transcript ? res[0].transcript.trim() : '';
         if (!text) continue;
-        heardEl.textContent = '“' + text + '”';
+        // Only the tail, so a long running transcript can't push the layout around.
+        heardEl.textContent = '“' + (text.length > 90 ? '…' + text.slice(-90) : text) + '”';
         handlePhrase(text, res.isFinal, mySession + ':' + i);
       }
     };
