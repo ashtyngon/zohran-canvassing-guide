@@ -285,11 +285,16 @@ if (typeof module !== 'undefined') module.exports = DMVParser;
   var heardEl = document.getElementById('heard');
   var unsupportedEl = document.getElementById('unsupported');
 
-  if (!SR || !window.isSecureContext) {
+  // Brave exposes the API but blocks the speech service behind it, so it
+  // fails with a "network" error without ever asking for the microphone.
+  var isBrave = !!navigator.brave;
+  if (!SR || isBrave || !window.isSecureContext) {
     btn.hidden = true;
     statusEl.hidden = true;
     unsupportedEl.hidden = false;
-    unsupportedEl.textContent = !SR
+    unsupportedEl.textContent = isBrave
+      ? 'Brave blocks the speech recognition this page needs. Open this link in Chrome, Edge or Safari instead.'
+      : !SR
       ? "This browser doesn't support speech recognition. Open this page in Safari on iPhone, or Chrome on Android or a computer."
       : 'The microphone only works over HTTPS. Open this page from its https:// address.';
     return;
@@ -302,6 +307,7 @@ if (typeof module !== 'undefined') module.exports = DMVParser;
   var startedAt = 0;
   var quickFails = 0;
   var restartTimer = null;
+  var lastError = null;
   var wakeLock = null;
 
   var confirmed = { ticket: null, counter: null };
@@ -379,6 +385,7 @@ if (typeof module !== 'undefined') module.exports = DMVParser;
     r.onresult = function (e) {
       if (rec !== r) return;
       quickFails = 0;
+      lastError = null;
       for (var i = e.resultIndex; i < e.results.length; i++) {
         var res = e.results[i];
         var text = res[0] && res[0].transcript ? res[0].transcript.trim() : '';
@@ -397,6 +404,7 @@ if (typeof module !== 'undefined') module.exports = DMVParser;
       }
       // Other errors (no-speech, network, aborted, audio-capture) end the
       // session; onend restarts it.
+      lastError = e.error;
     };
     r.onend = function () {
       if (rec !== r) return;
@@ -419,7 +427,13 @@ if (typeof module !== 'undefined') module.exports = DMVParser;
     // Back off if sessions keep dying immediately.
     if (Date.now() - startedAt < 1500) quickFails++; else quickFails = 0;
     var delay = Math.min(250 * Math.pow(2, quickFails), 4000);
-    setStatus('Restarting…');
+    if (quickFails >= 2 && lastError === 'network') {
+      setStatus("Can't reach the speech recognition service. This browser may not include it: try Chrome, Edge or Safari. Still retrying\u2026");
+    } else if (quickFails >= 2 && lastError === 'audio-capture') {
+      setStatus('No sound from the microphone. Check that one is connected and that your browser may use it (Mac: System Settings \u2192 Privacy & Security \u2192 Microphone). Still retrying\u2026');
+    } else {
+      setStatus('Restarting…');
+    }
     restartTimer = setTimeout(startRec, delay);
   }
 
