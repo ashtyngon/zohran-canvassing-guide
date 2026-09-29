@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>DMV Number Caller</title>
+<style>
+  :root {
+    --bg: #000;
+    --fg: #fff;
+    --muted: #9a9a9a;
+    --flash: #ffd400;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--fg); }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+  }
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 2.5vh;
+    min-height: calc(100dvh - 32px);
+  }
+  .intro {
+    font-size: clamp(17px, 1.9vw, 26px);
+    line-height: 1.35;
+    font-weight: 500;
+    margin: 0;
+    max-width: 38em;
+  }
+  .label {
+    font-size: clamp(14px, 1.6vw, 20px);
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0;
+  }
+  .display { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 1vh; flex: 1; justify-content: center; }
+  #ticket {
+    font-size: min(32vw, 30vh);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+    margin: 0;
+    transition: color 0.3s;
+  }
+  #counter {
+    font-size: min(12vw, 11vh);
+    font-weight: 700;
+    line-height: 1.1;
+    margin: 0;
+    overflow-wrap: anywhere;
+    transition: color 0.3s;
+  }
+  .provisional { opacity: 0.6; }
+  .flash { color: var(--flash); }
+  button {
+    font: inherit;
+    font-size: clamp(20px, 2.4vw, 28px);
+    font-weight: 700;
+    padding: 18px 40px;
+    min-width: min(100%, 320px);
+    border-radius: 14px;
+    border: 3px solid var(--fg);
+    background: var(--fg);
+    color: var(--bg);
+    cursor: pointer;
+  }
+  button.on { background: var(--bg); color: var(--fg); }
+  #status { font-size: 15px; color: var(--muted); margin: 0; min-height: 1.3em; }
+  #heard {
+    font-size: 15px;
+    color: var(--muted);
+    margin: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    min-height: 1.3em;
+  }
+  #unsupported { font-size: 20px; line-height: 1.4; margin: 0; max-width: 30em; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+  <p class="intro">Hey DMV, I made this right here so I don't have to listen endlessly. I'm sure you could too if you cared enough</p>
+
+  <div class="display">
+    <p class="label">Now serving</p>
+    <p id="ticket">&mdash;</p>
+    <p id="counter">&nbsp;</p>
+  </div>
+
+  <button id="toggle" type="button">Start listening</button>
+  <p id="unsupported" hidden></p>
+  <p id="status">Stopped</p>
+  <p id="heard"></p>
+</main>
+
+<script id="parser">
+// Parses one recognized phrase into { ticket, counter }.
+// ticket:  "B47" (letter optional, leading zeros removed) or null
+// counter: { word: "Window", number: "12", label: "Window 12" } or null
+var DMVParser = (function () {
+  var LETTERS = {
+    a: 'A', ay: 'A',
+    b: 'B', bee: 'B', be: 'B',
+    c: 'C', see: 'C', sea: 'C', cee: 'C',
+    d: 'D', dee: 'D',
+    e: 'E',
+    f: 'F', ef: 'F', eff: 'F',
+    g: 'G', gee: 'G',
+    h: 'H', aitch: 'H',
+    i: 'I', eye: 'I',
+    j: 'J', jay: 'J',
+    k: 'K', kay: 'K',
+    l: 'L', el: 'L', ell: 'L',
+    m: 'M', em: 'M',
+    n: 'N', en: 'N',
+    o: 'O', oh: 'O',
+    p: 'P', pee: 'P', pea: 'P',
+    q: 'Q', cue: 'Q', queue: 'Q',
+    r: 'R', are: 'R', ar: 'R',
+    s: 'S', es: 'S', ess: 'S',
+    t: 'T', tee: 'T', tea: 'T',
+    u: 'U', you: 'U',
+    v: 'V', vee: 'V',
+    w: 'W',
+    x: 'X', ex: 'X',
+    y: 'Y', why: 'Y',
+    z: 'Z', zee: 'Z', zed: 'Z'
+  };
+  // Letter names that are also common English words; only accepted when the
+  // phrase also contains an announcement word (ticket, serving, window, ...).
+  var WEAK = { a: 1, ay: 1, i: 1, eye: 1, o: 1, oh: 1, are: 1, ar: 1, you: 1, u: 1, why: 1, ex: 1, em: 1, en: 1, es: 1, el: 1 };
+  var UNITS = { zero: 0, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9 };
+  var TEENS = { ten: 10, eleven: 11, twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15, sixteen: 16, seventeen: 17, eighteen: 18, nineteen: 19 };
+  var TENS = { twenty: 20, thirty: 30, forty: 40, fourty: 40, fifty: 50, sixty: 60, seventy: 70, eighty: 80, ninety: 90 };
+  // Homophones accepted only as the last number word after "window" etc.
+  var HOMOPHONES = { to: 2, too: 2, for: 4, fore: 4, won: 1, ate: 8 };
+  var COUNTER_RE = /^(window|counter|station|booth|desk)s?$/;
+  var TICKET_WORDS = { ticket: 1, number: 1, serving: 1, calling: 1, called: 1, next: 1, now: 1, customer: 1 };
+  var SKIP_AFTER_COUNTER = { number: 1, no: 1, num: 1 };
+
+  function tokenize(text) {
+    var s = String(text || '').toLowerCase()
+      .replace(/(\d):(\d)/g, '$1$2')          // "1:04" -> "104"
+      .replace(/#/g, ' number ')
+      .replace(/['’]/g, '')
+      .replace(/[,;!?]/g, ' , ')
+      .replace(/[^a-z0-9, ]+/g, ' ')          // hyphens, periods, etc.
+      .replace(/([a-z])(\d)/g, '$1 $2')       // "b47" -> "b 47"
+      .replace(/(\d)([a-z])/g, '$1 $2')
+      .replace(/\bdouble (u|you)\b/g, 'w');
+    return s.split(/\s+/).filter(Boolean);
+  }
+
+  // Reads a spoken or written number starting at tokens[i].
+  // Returns { digits, end } (end is exclusive) or null.
+  function readNumber(tokens, i, used, opts) {
+    opts = opts || {};
+    var chunks = [];
+    var j = i;
+    for (; j < tokens.length; j++) {
+      if (used[j]) break;
+      var t = tokens[j];
+      var last = chunks[chunks.length - 1];
+      if (/^\d+$/.test(t)) {
+        if (last && last.kind === 'tens' && /^[1-9]$/.test(t)) { last.n += +t; last.kind = 'num'; }
+        else chunks.push({ s: t, kind: 'digits' });
+      } else if (t in UNITS || ((t === 'oh' || t === 'o') && (chunks.length || opts.leadingOh))) {
+        var u = t in UNITS ? UNITS[t] : 0;
+        if (last && (last.kind === 'tens' || last.kind === 'hundred') && u > 0) { last.n += u; last.kind = 'num'; }
+        else chunks.push({ n: u, kind: 'unit' });
+      } else if (t in TEENS) {
+        if (last && last.kind === 'hundred') { last.n += TEENS[t]; last.kind = 'num'; }
+        else chunks.push({ n: TEENS[t], kind: 'num' });
+      } else if (t in TENS) {
+        if (last && last.kind === 'hundred') { last.n += TENS[t]; last.kind = 'tens'; }
+        else chunks.push({ n: TENS[t], kind: 'tens' });
+      } else if (t === 'hundred') {
+        if (last && last.kind === 'unit' && last.n > 0) { last.n *= 100; last.kind = 'hundred'; }
+        else chunks.push({ n: 100, kind: 'hundred' });
+      } else if (t === 'and' && last && last.kind === 'hundred') {
+        continue;
+      } else if (opts.homophones && t in HOMOPHONES && !chunks.length &&
+                 (j + 1 >= tokens.length || tokens[j + 1] === ',')) {
+        chunks.push({ n: HOMOPHONES[t], kind: 'num' });
+      } else {
+        break;
+      }
+    }
+    if (!chunks.length) return null;
+    // A trailing "and" is not part of the number.
+    while (j > i && tokens[j - 1] === 'and') j--;
+    var digits = chunks.map(function (c) { return c.s != null ? c.s : String(c.n); }).join('');
+    digits = digits.replace(/^0+(?=\d)/, '');
+    return { digits: digits, end: j };
+  }
+
+  function parse(text) {
+    var tokens = tokenize(text);
+    var used = {};
+    var counters = [];
+    var hasContext = false;
+
+    // Counters first, so their numbers are never read as tickets.
+    for (var i = 0; i < tokens.length; i++) {
+      var m = COUNTER_RE.exec(tokens[i]);
+      if (!m) continue;
+      hasContext = true;
+      var k = i + 1;
+      while (k < tokens.length && SKIP_AFTER_COUNTER[tokens[k]]) k++;
+      var num = readNumber(tokens, k, used, { homophones: true });
+      if (num && num.digits.length <= 3) {
+        var word = m[1].charAt(0).toUpperCase() + m[1].slice(1);
+        counters.push({ start: i, word: word, number: num.digits, label: word + ' ' + num.digits });
+        for (var x = i; x < num.end; x++) used[x] = true;
+        i = num.end - 1;
+      }
+    }
+    for (var t = 0; t < tokens.length; t++) if (TICKET_WORDS[tokens[t]]) hasContext = true;
+
+    var ticket = null;
+    for (var p = 0; p < tokens.length; p++) {
+      if (used[p]) continue;
+      var tok = tokens[p];
+      var cand = null;
+      if (tok in LETTERS && (!WEAK[tok] || hasContext)) {
+        var n1 = readNumber(tokens, p + 1, used, { leadingOh: true });
+        if (n1 && n1.digits.length <= 4) cand = { letter: LETTERS[tok], digits: n1.digits, start: p, end: n1.end };
+      }
+      if (!cand && tok !== 'oh' && tok !== 'o') {
+        var n2 = readNumber(tokens, p, used, {});
+        if (n2) {
+          var ctx = false;
+          for (var b = Math.max(0, p - 3); b < p; b++) if (TICKET_WORDS[tokens[b]]) ctx = true;
+          if (ctx && n2.digits.length <= 4) cand = { letter: '', digits: n2.digits, start: p, end: n2.end };
+          else { p = n2.end - 1; continue; }
+        }
+      }
+      if (cand) { ticket = cand; p = cand.end - 1; }
+    }
+
+    var counter = null;
+    if (counters.length) {
+      // With a ticket, only a counter said after it belongs to it.
+      if (ticket) {
+        for (var c = 0; c < counters.length; c++) if (counters[c].start >= ticket.end) { counter = counters[c]; break; }
+      } else {
+        counter = counters[counters.length - 1];
+      }
+    }
+    return {
+      ticket: ticket ? ticket.letter + ticket.digits : null,
+      counter: counter ? { word: counter.word, number: counter.number, label: counter.label } : null
+    };
+  }
+
+  return { parse: parse, tokenize: tokenize };
+})();
+if (typeof module !== 'undefined') module.exports = DMVParser;
+</script>
+
+<script>
+(function () {
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var ticketEl = document.getElementById('ticket');
+  var counterEl = document.getElementById('counter');
+  var btn = document.getElementById('toggle');
+  var statusEl = document.getElementById('status');
+  var heardEl = document.getElementById('heard');
+  var unsupportedEl = document.getElementById('unsupported');
+
+  if (!SR || !window.isSecureContext) {
+    btn.hidden = true;
+    statusEl.hidden = true;
+    unsupportedEl.hidden = false;
+    unsupportedEl.textContent = !SR
+      ? "This browser doesn't support speech recognition. Open this page in Safari on iPhone, or Chrome on Android or a computer."
+      : 'The microphone only works over HTTPS. Open this page from its https:// address.';
+    return;
+  }
+
+  var want = false;          // user wants to be listening
+  var rec = null;            // current recognizer instance
+  var running = false;
+  var session = 0;           // bumps on every restart so result keys stay unique
+  var startedAt = 0;
+  var quickFails = 0;
+  var restartTimer = null;
+  var wakeLock = null;
+
+  var confirmed = { ticket: null, counter: null };
+  var shown = { ticket: null, counter: null };
+  var awaiting = null;       // { key, until }: ticket announced without a counter
+  var provisionalKey = null;
+  var flashTimer = null;
+
+  function render(state, provisional) {
+    var changed = state.ticket && state.ticket !== shown.ticket;
+    ticketEl.textContent = state.ticket || '—';
+    counterEl.textContent = state.counter ? state.counter.label : ' ';
+    ticketEl.classList.toggle('provisional', !!provisional);
+    counterEl.classList.toggle('provisional', !!provisional);
+    if (changed) {
+      ticketEl.classList.add('flash');
+      counterEl.classList.add('flash');
+      clearTimeout(flashTimer);
+      flashTimer = setTimeout(function () {
+        ticketEl.classList.remove('flash');
+        counterEl.classList.remove('flash');
+      }, 2500);
+    }
+    shown = { ticket: state.ticket, counter: state.counter };
+  }
+
+  function handlePhrase(text, isFinal, key) {
+    var p = DMVParser.parse(text);
+    var now = Date.now();
+    if (p.ticket) {
+      if (!isFinal) {
+        var keep = p.counter || (p.ticket === confirmed.ticket ? confirmed.counter : null);
+        provisionalKey = key;
+        render({ ticket: p.ticket, counter: keep }, true);
+        return;
+      }
+      provisionalKey = null;
+      confirmed = { ticket: p.ticket, counter: p.counter };
+      awaiting = p.counter ? null : { key: key, until: now + 15000 };
+      render(confirmed, false);
+      return;
+    }
+    if (p.counter && awaiting && awaiting.key !== key && now < awaiting.until) {
+      if (!isFinal) {
+        provisionalKey = key;
+        render({ ticket: confirmed.ticket, counter: p.counter }, true);
+        return;
+      }
+      provisionalKey = null;
+      confirmed.counter = p.counter;
+      awaiting = null;
+      render(confirmed, false);
+      return;
+    }
+    // Nothing usable: undo any guess this phrase made while it was interim.
+    if (provisionalKey === key) {
+      provisionalKey = null;
+      render(confirmed, false);
+    }
+  }
+
+  function setStatus(s) { statusEl.textContent = s; }
+
+  function startRec() {
+    restartTimer = null;
+    if (!want || running) return;
+    if (document.visibilityState === 'hidden') return;
+    var r = new SR();
+    r.lang = 'en-US';
+    r.continuous = true;
+    r.interimResults = true;
+    r.maxAlternatives = 1;
+    var mySession = ++session;
+    r.onstart = function () { if (rec === r) setStatus('Listening…'); };
+    r.onresult = function (e) {
+      if (rec !== r) return;
+      quickFails = 0;
+      for (var i = e.resultIndex; i < e.results.length; i++) {
+        var res = e.results[i];
+        var text = res[0] && res[0].transcript ? res[0].transcript.trim() : '';
+        if (!text) continue;
+        heardEl.textContent = '“' + text + '”';
+        handlePhrase(text, res.isFinal, mySession + ':' + i);
+      }
+    };
+    r.onerror = function (e) {
+      if (rec !== r) return;
+      if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
+        stop();
+        setStatus(e.error === 'not-allowed'
+          ? 'Microphone access was blocked. Allow the microphone for this site in your browser settings, then tap Start.'
+          : 'Speech recognition is turned off on this device. On iPhone, turn on Siri & Dictation in Settings, then tap Start.');
+      }
+      // Other errors (no-speech, network, aborted, audio-capture) end the
+      // session; onend restarts it.
+    };
+    r.onend = function () {
+      if (rec !== r) return;
+      running = false;
+      if (want) scheduleRestart();
+    };
+    rec = r;
+    try {
+      r.start();
+      running = true;
+      startedAt = Date.now();
+    } catch (err) {
+      running = false;
+      scheduleRestart();
+    }
+  }
+
+  function scheduleRestart() {
+    if (!want || restartTimer) return;
+    // Back off if sessions keep dying immediately.
+    if (Date.now() - startedAt < 1500) quickFails++; else quickFails = 0;
+    var delay = Math.min(250 * Math.pow(2, quickFails), 4000);
+    setStatus('Restarting…');
+    restartTimer = setTimeout(startRec, delay);
+  }
+
+  function requestWakeLock() {
+    if (!('wakeLock' in navigator) || !want || document.visibilityState !== 'visible') return;
+    if (wakeLock && !wakeLock.released) return;
+    navigator.wakeLock.request('screen').then(function (lock) {
+      wakeLock = lock;
+      if (!want) { lock.release(); wakeLock = null; }
+    }).catch(function () {});
+  }
+
+  function releaseWakeLock() {
+    if (wakeLock) { wakeLock.release().catch(function () {}); wakeLock = null; }
+  }
+
+  function start() {
+    want = true;
+    quickFails = 0;
+    btn.textContent = 'Stop listening';
+    btn.classList.add('on');
+    setStatus('Starting…');
+    requestWakeLock();
+    startRec();
+  }
+
+  function stop() {
+    want = false;
+    clearTimeout(restartTimer);
+    restartTimer = null;
+    var r = rec;
+    rec = null;
+    running = false;
+    if (r) { try { r.abort(); } catch (e) {} }
+    releaseWakeLock();
+    btn.textContent = 'Start listening';
+    btn.classList.remove('on');
+    setStatus('Stopped');
+    if (provisionalKey) { provisionalKey = null; render(confirmed, false); }
+  }
+
+  btn.addEventListener('click', function () { want ? stop() : start(); });
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible' && want) {
+      requestWakeLock();
+      if (!running && !restartTimer) startRec();
+    }
+  });
+
+  // Safety net: if a session died without firing onend, start a new one.
+  setInterval(function () {
+    if (want && !running && !restartTimer && document.visibilityState === 'visible') startRec();
+  }, 4000);
+})();
+</script>
+</body>
+</html>
