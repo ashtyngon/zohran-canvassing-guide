@@ -48,7 +48,7 @@
   }
   .display { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 1vh; flex: 1; justify-content: center; }
   #ticket {
-    font-size: min(32vw, 30vh);
+    font-size: min(32vw, 26vh);
     font-weight: 800;
     line-height: 1;
     letter-spacing: -0.02em;
@@ -58,7 +58,7 @@
     transition: color 0.3s;
   }
   #counter {
-    font-size: min(12vw, 11vh);
+    font-size: min(12vw, 10vh);
     font-weight: 700;
     line-height: 1.1;
     margin: 0;
@@ -81,6 +81,10 @@
   }
   button.on { background: var(--bg); color: var(--fg); }
   #status { font-size: clamp(18px, 2vw, 24px); font-weight: 700; color: var(--muted); margin: 0; min-height: 1.3em; }
+  .microw { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 14px; max-width: 100%; }
+  #meter { width: min(100%, 200px); height: 12px; background: #333; border-radius: 6px; overflow: hidden; }
+  #meterFill { height: 100%; width: 0; background: var(--fg); }
+  #mic { font-size: clamp(16px, 1.8vw, 20px); font-weight: 600; color: var(--muted); margin: 0; overflow-wrap: anywhere; }
   #heard {
     font-size: clamp(18px, 2vw, 24px);
     font-weight: 600;
@@ -107,6 +111,10 @@
   <button id="toggle" type="button">Start listening</button>
   <p id="unsupported" hidden></p>
   <p id="status">Stopped</p>
+  <div class="microw">
+    <div id="meter" hidden><div id="meterFill"></div></div>
+    <p id="mic" hidden></p>
+  </div>
   <p id="heard"></p>
 </main>
 
@@ -309,6 +317,9 @@ if (typeof module !== 'undefined') module.exports = DMVParser;
   var statusEl = document.getElementById('status');
   var heardEl = document.getElementById('heard');
   var unsupportedEl = document.getElementById('unsupported');
+  var meterEl = document.getElementById('meter');
+  var meterFill = document.getElementById('meterFill');
+  var micEl = document.getElementById('mic');
 
   // Brave exposes the API but blocks the speech service behind it, so it
   // fails with a "network" error without ever asking for the microphone.
@@ -334,6 +345,17 @@ if (typeof module !== 'undefined') module.exports = DMVParser;
   var restartTimer = null;
   var lastError = null;
   var wakeLock = null;
+  // Mic level meter (not on iPhone/iPad, where a second capture can
+  // interfere with speech recognition).
+  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  var micStream = null;
+  var audioCtx = null;
+  var meterRaf = null;
+  var ERROR_NOTES = {
+    'no-speech': 'no speech heard yet',
+    'audio-capture': 'no audio from the microphone',
+    'network': "can't reach the speech service"
+  };
 
   var confirmed = { ticket: null, counter: null };
   var shown = { ticket: null, counter: null };
@@ -406,11 +428,15 @@ if (typeof module !== 'undefined') module.exports = DMVParser;
     r.interimResults = true;
     r.maxAlternatives = 1;
     var mySession = ++session;
-    r.onstart = function () { if (rec === r) setStatus('Listening…'); };
+    r.onstart = function () {
+      if (rec !== r) return;
+      var note = lastError && ERROR_NOTES[lastError];
+      setStatus('Listening…' + (note ? ' (' + note + ')' : ''));
+    };
     r.onresult = function (e) {
       if (rec !== r) return;
       quickFails = 0;
-      lastError = null;
+      if (lastError) { lastError = null; setStatus('Listening\u2026'); }
       for (var i = e.resultIndex; i < e.results.length; i++) {
         var res = e.results[i];
         var text = res[0] && res[0].transcript ? res[0].transcript.trim() : '';
@@ -476,14 +502,78 @@ if (typeof module !== 'undefined') module.exports = DMVParser;
     if (wakeLock) { wakeLock.release().catch(function () {}); wakeLock = null; }
   }
 
+  function micErrorText(err) {
+    var name = err && err.name;
+    if (name === 'NotAllowedError' || name === 'SecurityError') {
+      return 'The microphone is blocked. Click the icon at the left of the address bar and allow the microphone. On a Mac, also switch your browser on in System Settings \u2192 Privacy & Security \u2192 Microphone. Then tap Start.';
+    }
+    if (name === 'NotFoundError' || name === 'OverconstrainedError') {
+      return 'No microphone found. Check System Settings \u2192 Sound \u2192 Input, then tap Start.';
+    }
+    if (name === 'NotReadableError') {
+      return "The microphone couldn't be opened. Another app may be using it, or macOS may be blocking it (System Settings \u2192 Privacy & Security \u2192 Microphone).";
+    }
+    return "Couldn't open the microphone (" + (name || 'unknown error') + ').';
+  }
+
+  function openMic() {
+    if (isIOS || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return Promise.resolve(true);
+    var AC = window.AudioContext || window.webkitAudioContext;
+    // Created inside the click so the browser lets it run.
+    if (AC) { try { audioCtx = new AC(); } catch (e) { audioCtx = null; } }
+    return navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+      if (!want) { stream.getTracks().forEach(function (t) { t.stop(); }); return false; }
+      micStream = stream;
+      var track = stream.getAudioTracks()[0];
+      micEl.textContent = 'Mic: ' + (track && track.label ? track.label : 'default');
+      micEl.hidden = false;
+      if (audioCtx) {
+        audioCtx.resume();
+        var an = audioCtx.createAnalyser();
+        an.fftSize = 1024;
+        audioCtx.createMediaStreamSource(stream).connect(an);
+        var buf = new Float32Array(an.fftSize);
+        var level = 0;
+        meterEl.hidden = false;
+        (function tick() {
+          an.getFloatTimeDomainData(buf);
+          var sum = 0;
+          for (var i = 0; i < buf.length; i++) sum += buf[i] * buf[i];
+          var rms = Math.sqrt(sum / buf.length);
+          level = Math.max(Math.min(1, rms * 6), level * 0.9);
+          meterFill.style.width = Math.round(level * 100) + '%';
+          meterRaf = requestAnimationFrame(tick);
+        })();
+      }
+      return true;
+    }, function (err) {
+      stop();
+      setStatus(micErrorText(err));
+      return false;
+    });
+  }
+
+  function closeMic() {
+    if (meterRaf) cancelAnimationFrame(meterRaf);
+    meterRaf = null;
+    if (micStream) micStream.getTracks().forEach(function (t) { t.stop(); });
+    micStream = null;
+    if (audioCtx) { try { audioCtx.close(); } catch (e) {} }
+    audioCtx = null;
+    meterEl.hidden = true;
+    meterFill.style.width = '0';
+    micEl.hidden = true;
+  }
+
   function start() {
     want = true;
     quickFails = 0;
+    lastError = null;
     btn.textContent = 'Stop listening';
     btn.classList.add('on');
-    setStatus('Starting…');
+    setStatus('Starting\u2026');
     requestWakeLock();
-    startRec();
+    openMic().then(function (ok) { if (ok && want) startRec(); });
   }
 
   function stop() {
@@ -495,6 +585,7 @@ if (typeof module !== 'undefined') module.exports = DMVParser;
     running = false;
     if (r) { try { r.abort(); } catch (e) {} }
     releaseWakeLock();
+    closeMic();
     btn.textContent = 'Start listening';
     btn.classList.remove('on');
     setStatus('Stopped');
