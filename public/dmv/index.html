@@ -65,7 +65,6 @@
     overflow-wrap: anywhere;
     transition: color 0.3s;
   }
-  .provisional { opacity: 0.6; }
   .flash { color: var(--flash); }
   button {
     font: inherit;
@@ -119,9 +118,10 @@
 </main>
 
 <script id="parser">
-// Parses one recognized phrase into { ticket, counter }.
-// ticket:  "B47" (letter optional, leading zeros removed) or null
-// counter: { word: "Window", number: "12", label: "Window 12" } or null
+// Parses recognized speech into { ticket, counter, open }. The newest ticket wins.
+// ticket:  "LP168" (up to two letters, at least three digits) or null
+// counter: { word: "Counter", number: "1", label: "Counter 1" } or null
+// open:    true when the ticket ends the text and may still be growing ("LP 16")
 var DMVParser = (function () {
   var LETTERS = {
     a: 'A', ay: 'A',
@@ -135,11 +135,11 @@ var DMVParser = (function () {
     i: 'I', eye: 'I',
     j: 'J', jay: 'J',
     k: 'K', kay: 'K',
-    l: 'L', el: 'L', ell: 'L',
+    l: 'L', el: 'L', ell: 'L', elle: 'L',
     m: 'M', em: 'M',
     n: 'N', en: 'N',
     o: 'O', oh: 'O',
-    p: 'P', pee: 'P', pea: 'P',
+    p: 'P', pee: 'P', pea: 'P', pe: 'P',
     q: 'Q', cue: 'Q', queue: 'Q',
     r: 'R', are: 'R', ar: 'R',
     s: 'S', es: 'S', ess: 'S',
@@ -157,7 +157,7 @@ var DMVParser = (function () {
   var UNITS = { zero: 0, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9 };
   var TEENS = { ten: 10, eleven: 11, twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15, sixteen: 16, seventeen: 17, eighteen: 18, nineteen: 19 };
   var TENS = { twenty: 20, thirty: 30, forty: 40, fourty: 40, fifty: 50, sixty: 60, seventy: 70, eighty: 80, ninety: 90 };
-  // Homophones accepted only as the last number word after "window" etc.
+  // Homophones accepted after "counter" etc. when no other number follows.
   var HOMOPHONES = { to: 2, too: 2, for: 4, fore: 4, won: 1, ate: 8 };
   var COUNTER_RE = /^(window|counter|station|booth|desk)s?$/;
   // Ways the recognizer mishears "counter".
@@ -174,7 +174,22 @@ var DMVParser = (function () {
     if (second && (tok === 'oh' || tok === 'o')) return null;  // "C oh one" is C 01
     if (tok in LETTERS) return { text: LETTERS[tok], weak: !!WEAK[tok] };
     if (/^[a-z]{2}$/.test(tok) && !COMMON2[tok]) return { text: tok.toUpperCase(), weak: false };
+    // Two letter names run together: "elpee" -> LP, "seedee" -> CD.
+    if (/^[a-z]{4,8}$/.test(tok) && tok !== 'been') {
+      for (var k = 2; k <= tok.length - 2; k++) {
+        var a = tok.slice(0, k), b = tok.slice(k);
+        if (a in LETTERS && b in LETTERS) return { text: LETTERS[a] + LETTERS[b], weak: !!(WEAK[a] && WEAK[b]) };
+      }
+    }
     return null;
+  }
+
+  function isNumberWord(t) {
+    return /^\d+$/.test(t) || t in UNITS || t in TEENS || t in TENS || t === 'hundred';
+  }
+
+  function chunkDigits(c) {
+    return (c.s != null ? c.s : String(c.n)).replace(/^0+(?=\d)/, '');
   }
 
   function counterWord(tok) {
@@ -197,7 +212,8 @@ var DMVParser = (function () {
   }
 
   // Reads a spoken or written number starting at tokens[i].
-  // Returns { digits, end } (end is exclusive) or null.
+  // Returns { digits, end, chunks, lastKind } (end is exclusive) or null.
+  // Each chunk is one spoken group ("168", "sixty eight", "oh") with its own end.
   function readNumber(tokens, i, used, opts) {
     opts = opts || {};
     var chunks = [];
@@ -225,18 +241,18 @@ var DMVParser = (function () {
       } else if (t === 'and' && last && last.kind === 'hundred') {
         continue;
       } else if (opts.homophones && t in HOMOPHONES && !chunks.length &&
-                 (j + 1 >= tokens.length || tokens[j + 1] === ',')) {
+                 !(j + 1 < tokens.length && isNumberWord(tokens[j + 1]))) {
         chunks.push({ n: HOMOPHONES[t], kind: 'num' });
       } else {
         break;
       }
+      chunks[chunks.length - 1].e = j + 1;
     }
     if (!chunks.length) return null;
-    // A trailing "and" is not part of the number.
-    while (j > i && tokens[j - 1] === 'and') j--;
+    var lastChunk = chunks[chunks.length - 1];
     var digits = chunks.map(function (c) { return c.s != null ? c.s : String(c.n); }).join('');
     digits = digits.replace(/^0+(?=\d)/, '');
-    return { digits: digits, end: j };
+    return { digits: digits, end: lastChunk.e, chunks: chunks, lastKind: lastChunk.kind };
   }
 
   function parse(text) {
@@ -253,6 +269,8 @@ var DMVParser = (function () {
       var k = i + 1;
       while (k < tokens.length && SKIP_AFTER_COUNTER[tokens[k]]) k++;
       var num = readNumber(tokens, k, used, { homophones: true });
+      // Only the first number group: in "counter 1 169" the 169 is the next ticket.
+      if (num && num.chunks.length > 1) num = { digits: chunkDigits(num.chunks[0]), end: num.chunks[0].e };
       if (num && num.digits.length <= 3) {
         counters.push({ start: i, word: word, number: num.digits, label: word + ' ' + num.digits });
         for (var x = i; x < num.end; x++) used[x] = true;
@@ -278,10 +296,10 @@ var DMVParser = (function () {
       var cand = null;
       if (prefix) {
         var n1 = readNumber(tokens, q, used, { leadingOh: true });
-        if (n1 && n1.digits.length <= 4 && (!allWeak || hasContext)) cand = { letter: prefix, digits: n1.digits, end: n1.end };
+        if (n1 && n1.digits.length <= 4 && (!allWeak || hasContext)) cand = { letter: prefix, digits: n1.digits, end: n1.end, lastKind: n1.lastKind };
       } else if (tokens[p] !== 'oh' && tokens[p] !== 'o') {
         var n2 = readNumber(tokens, p, used, {});
-        if (n2 && n2.digits.length <= 4) cand = { letter: '', digits: n2.digits, end: n2.end };
+        if (n2 && n2.digits.length <= 4) cand = { letter: '', digits: n2.digits, end: n2.end, lastKind: n2.lastKind };
         else if (n2) { p = n2.end - 1; continue; }
       }
       if (cand) { ticket = cand; p = cand.end - 1; }
@@ -296,10 +314,14 @@ var DMVParser = (function () {
         counter = counters[counters.length - 1];
       }
     }
+    var len = tokens.length;
+    while (len && tokens[len - 1] === ',') len--;
     return {
       // Tickets are shown with three digits, like the printed ones: CD001.
       ticket: ticket ? ticket.letter + ('00' + ticket.digits).slice(-Math.max(3, ticket.digits.length)) : null,
-      counter: counter ? { word: counter.word, number: counter.number, label: counter.label } : null
+      counter: counter ? { word: counter.word, number: counter.number, label: counter.label } : null,
+      open: !!ticket && ticket.end >= len &&
+        (ticket.digits.length < 3 || ticket.lastKind === 'tens' || ticket.lastKind === 'hundred')
     };
   }
 
@@ -339,7 +361,6 @@ if (typeof module !== 'undefined') module.exports = DMVParser;
   var want = false;          // user wants to be listening
   var rec = null;            // current recognizer instance
   var running = false;
-  var session = 0;           // bumps on every restart so result keys stay unique
   var startedAt = 0;
   var quickFails = 0;
   var restartTimer = null;
@@ -351,24 +372,30 @@ if (typeof module !== 'undefined') module.exports = DMVParser;
   var micStream = null;
   var audioCtx = null;
   var meterRaf = null;
+  // Chrome/Edge 135+ can recognize speech from a stream the page supplies,
+  // so the mic is amplified first. Other browsers hear the mic as it is.
+  var chromeVersion = +((navigator.userAgent.match(/Chrom(?:e|ium)\/(\d+)/) || [])[1] || 0);
+  var canBoost = chromeVersion >= 135 && !isIOS;
+  var BOOST = 8;
+  var useTrack = canBoost;
+  var boostedTrack = null;
+  var usingTrack = false;
+  var peakLevel = 0;         // loudest level seen in the current session
+  var noSpeechRuns = 0;
+  var micName = '';
   var ERROR_NOTES = {
     'no-speech': 'no speech heard yet',
     'audio-capture': 'no audio from the microphone',
     'network': "can't reach the speech service"
   };
 
-  var confirmed = { ticket: null, counter: null };
   var shown = { ticket: null, counter: null };
-  var awaiting = null;       // { key, until }: ticket announced without a counter
-  var provisionalKey = null;
   var flashTimer = null;
 
-  function render(state, provisional) {
+  function render(state) {
     var changed = state.ticket && state.ticket !== shown.ticket;
-    ticketEl.textContent = state.ticket || '—';
-    counterEl.textContent = state.counter ? state.counter.label : ' ';
-    ticketEl.classList.toggle('provisional', !!provisional);
-    counterEl.classList.toggle('provisional', !!provisional);
+    ticketEl.textContent = state.ticket || '\u2014';
+    counterEl.textContent = state.counter ? state.counter.label : '\u00a0';
     if (changed) {
       ticketEl.classList.add('flash');
       counterEl.classList.add('flash');
@@ -381,39 +408,14 @@ if (typeof module !== 'undefined') module.exports = DMVParser;
     shown = { ticket: state.ticket, counter: state.counter };
   }
 
-  function handlePhrase(text, isFinal, key) {
+  // Shows the newest ticket in the recent transcript as soon as it is complete.
+  function handleText(text, isFinal) {
     var p = DMVParser.parse(text);
-    var now = Date.now();
-    if (p.ticket) {
-      if (!isFinal) {
-        var keep = p.counter || (p.ticket === confirmed.ticket ? confirmed.counter : null);
-        provisionalKey = key;
-        render({ ticket: p.ticket, counter: keep }, true);
-        return;
-      }
-      provisionalKey = null;
-      confirmed = { ticket: p.ticket, counter: p.counter };
-      awaiting = p.counter ? null : { key: key, until: now + 15000 };
-      render(confirmed, false);
-      return;
-    }
-    if (p.counter && awaiting && awaiting.key !== key && now < awaiting.until) {
-      if (!isFinal) {
-        provisionalKey = key;
-        render({ ticket: confirmed.ticket, counter: p.counter }, true);
-        return;
-      }
-      provisionalKey = null;
-      confirmed.counter = p.counter;
-      awaiting = null;
-      render(confirmed, false);
-      return;
-    }
-    // Nothing usable: undo any guess this phrase made while it was interim.
-    if (provisionalKey === key) {
-      provisionalKey = null;
-      render(confirmed, false);
-    }
+    if (!p.ticket) return;
+    // "LP 16" may still become "LP 168": wait for the next word.
+    if (p.open && !isFinal) return;
+    var counter = p.counter || (p.ticket === shown.ticket ? shown.counter : null);
+    render({ ticket: p.ticket, counter: counter });
   }
 
   function setStatus(s) { statusEl.textContent = s; }
@@ -427,7 +429,6 @@ if (typeof module !== 'undefined') module.exports = DMVParser;
     r.continuous = true;
     r.interimResults = true;
     r.maxAlternatives = 1;
-    var mySession = ++session;
     r.onstart = function () {
       if (rec !== r) return;
       var note = lastError && ERROR_NOTES[lastError];
@@ -436,18 +437,31 @@ if (typeof module !== 'undefined') module.exports = DMVParser;
     r.onresult = function (e) {
       if (rec !== r) return;
       quickFails = 0;
+      noSpeechRuns = 0;
       if (lastError) { lastError = null; setStatus('Listening\u2026'); }
-      for (var i = e.resultIndex; i < e.results.length; i++) {
-        var res = e.results[i];
-        var text = res[0] && res[0].transcript ? res[0].transcript.trim() : '';
-        if (!text) continue;
-        // Only the tail, so a long running transcript can't push the layout around.
-        heardEl.textContent = '“' + (text.length > 90 ? '…' + text.slice(-90) : text) + '”';
-        handlePhrase(text, res.isFinal, mySession + ':' + i);
+      // The recognizer cuts speech into pieces at arbitrary points ("now
+      // serving LP" + "168 at counter 1"), so read the last few together.
+      var parts = [];
+      for (var i = Math.max(0, e.results.length - 4); i < e.results.length; i++) {
+        var alt = e.results[i][0];
+        if (alt && alt.transcript) parts.push(alt.transcript.trim());
       }
+      var text = parts.join(' ');
+      if (!text) return;
+      // Only the tail, so a long running transcript can't push the layout around.
+      heardEl.textContent = '\u201C' + (text.length > 90 ? '\u2026' + text.slice(-90) : text) + '\u201D';
+      handleText(text, e.results[e.results.length - 1].isFinal);
     };
     r.onerror = function (e) {
       if (rec !== r) return;
+      lastError = e.error;
+      if (usingTrack && (e.error === 'no-speech' ? peakLevel > 0.25 && ++noSpeechRuns >= 2
+                                                 : e.error !== 'aborted' && e.error !== 'network')) {
+        // The boosted stream isn't working here: use the microphone directly.
+        useTrack = false;
+        updateMicLabel();
+        return;
+      }
       if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
         stop();
         setStatus(e.error === 'not-allowed'
@@ -456,7 +470,6 @@ if (typeof module !== 'undefined') module.exports = DMVParser;
       }
       // Other errors (no-speech, network, aborted, audio-capture) end the
       // session; onend restarts it.
-      lastError = e.error;
     };
     r.onend = function () {
       if (rec !== r) return;
@@ -464,12 +477,16 @@ if (typeof module !== 'undefined') module.exports = DMVParser;
       if (want) scheduleRestart();
     };
     rec = r;
+    peakLevel = 0;
+    var track = useTrack && boostedTrack && boostedTrack.readyState === 'live' ? boostedTrack : null;
     try {
-      r.start();
+      if (track) r.start(track); else r.start();
+      usingTrack = !!track;
       running = true;
       startedAt = Date.now();
     } catch (err) {
       running = false;
+      if (track) { useTrack = false; updateMicLabel(); }
       scheduleRestart();
     }
   }
@@ -516,22 +533,55 @@ if (typeof module !== 'undefined') module.exports = DMVParser;
     return "Couldn't open the microphone (" + (name || 'unknown error') + ').';
   }
 
+  function updateMicLabel() {
+    if (!micName) { micEl.hidden = true; return; }
+    micEl.textContent = 'Mic: ' + micName + (useTrack && boostedTrack
+      ? ', boosted ' + BOOST + '\u00d7'
+      : ', not boosted (turn Input volume to max: System Settings \u2192 Sound \u2192 Input)');
+    micEl.hidden = false;
+  }
+
   function openMic() {
     if (isIOS || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return Promise.resolve(true);
     var AC = window.AudioContext || window.webkitAudioContext;
     // Created inside the click so the browser lets it run.
     if (AC) { try { audioCtx = new AC(); } catch (e) { audioCtx = null; } }
-    return navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+    // Browser voice processing off: its gain control can turn the input
+    // level down, and noise suppression muffles distant speech.
+    var constraints = { audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } };
+    return navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
       if (!want) { stream.getTracks().forEach(function (t) { t.stop(); }); return false; }
       micStream = stream;
       var track = stream.getAudioTracks()[0];
-      micEl.textContent = 'Mic: ' + (track && track.label ? track.label : 'default');
-      micEl.hidden = false;
-      if (audioCtx) {
-        audioCtx.resume();
+      micName = track && track.label ? track.label : 'default';
+      if (!audioCtx) { useTrack = false; updateMicLabel(); return true; }
+      return audioCtx.resume().then(function () {
+        if (!want || !audioCtx) return false;
+        var src = audioCtx.createMediaStreamSource(stream);
+        var out = src;
+        if (useTrack && audioCtx.state === 'running' && audioCtx.createMediaStreamDestination) {
+          var gain = audioCtx.createGain();
+          gain.gain.value = BOOST;
+          // Limiter, so the boosted signal doesn't clip.
+          var limiter = audioCtx.createDynamicsCompressor();
+          limiter.threshold.value = -12;
+          limiter.knee.value = 0;
+          limiter.ratio.value = 20;
+          limiter.attack.value = 0.003;
+          limiter.release.value = 0.2;
+          src.connect(gain);
+          gain.connect(limiter);
+          var dest = audioCtx.createMediaStreamDestination();
+          limiter.connect(dest);
+          boostedTrack = dest.stream.getAudioTracks()[0] || null;
+          out = limiter;
+        }
+        if (!boostedTrack) useTrack = false;
+        updateMicLabel();
+        // The meter shows what the recognizer gets: boosted when boosting.
         var an = audioCtx.createAnalyser();
         an.fftSize = 1024;
-        audioCtx.createMediaStreamSource(stream).connect(an);
+        out.connect(an);
         var buf = new Float32Array(an.fftSize);
         var level = 0;
         meterEl.hidden = false;
@@ -541,11 +591,12 @@ if (typeof module !== 'undefined') module.exports = DMVParser;
           for (var i = 0; i < buf.length; i++) sum += buf[i] * buf[i];
           var rms = Math.sqrt(sum / buf.length);
           level = Math.max(Math.min(1, rms * 6), level * 0.9);
+          if (level > peakLevel) peakLevel = level;
           meterFill.style.width = Math.round(level * 100) + '%';
           meterRaf = requestAnimationFrame(tick);
         })();
-      }
-      return true;
+        return true;
+      });
     }, function (err) {
       stop();
       setStatus(micErrorText(err));
@@ -558,8 +609,11 @@ if (typeof module !== 'undefined') module.exports = DMVParser;
     meterRaf = null;
     if (micStream) micStream.getTracks().forEach(function (t) { t.stop(); });
     micStream = null;
+    if (boostedTrack) boostedTrack.stop();
+    boostedTrack = null;
     if (audioCtx) { try { audioCtx.close(); } catch (e) {} }
     audioCtx = null;
+    micName = '';
     meterEl.hidden = true;
     meterFill.style.width = '0';
     micEl.hidden = true;
@@ -568,7 +622,9 @@ if (typeof module !== 'undefined') module.exports = DMVParser;
   function start() {
     want = true;
     quickFails = 0;
+    noSpeechRuns = 0;
     lastError = null;
+    useTrack = canBoost;
     btn.textContent = 'Stop listening';
     btn.classList.add('on');
     setStatus('Starting\u2026');
@@ -589,7 +645,6 @@ if (typeof module !== 'undefined') module.exports = DMVParser;
     btn.textContent = 'Start listening';
     btn.classList.remove('on');
     setStatus('Stopped');
-    if (provisionalKey) { provisionalKey = null; render(confirmed, false); }
   }
 
   btn.addEventListener('click', function () { want ? stop() : start(); });
